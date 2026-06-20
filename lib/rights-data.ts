@@ -1,0 +1,58 @@
+import type { RightsTopicData } from "@/types";
+
+export const RIGHTS_TOPICS: RightsTopicData[] = [
+  {
+    id: "besittningsskydd",
+    title: "Besittningsskydd",
+    tag: "Grundläggande",
+    icon: "Home",
+    summary: "Din rätt att bo kvar",
+    content: `Enligt 12 kap. 46 § JB (Jordabalken) har du som hyresgäst rätt att bo kvar i din bostad. Hyresvärden kan bara säga upp dig av de skäl som räknas upp i lagen, t.ex. om du allvarligt misskött lägenheten, om fastigheten ska rivas, eller om hyresvärden behöver lägenheten för eget bruk. Skyddet gäller automatiskt efter att du bott i lägenheten i 2 år.`,
+    lawRef: "12 kap. 46 § JB",
+  },
+  {
+    id: "andrahand",
+    title: "Andrahandsuthyrning",
+    tag: "Viktigt",
+    icon: "Users",
+    summary: "Rätt att hyra ut i andra hand",
+    content: `Du har rätt att hyra ut din lägenhet i andra hand om du har skäliga skäl, t.ex. arbete eller studier på annan ort, provsamboende, eller vård av anhörig. Hyresvärden måste bevilja eller neka inom 4 veckor. Vägrar de utan skäl kan du ansöka om tillstånd hos Hyresnämnden. Observera: ett avtalsförbud mot andrahand är utan verkan — lagen är tvingande (12 kap. 40 § JB).`,
+    lawRef: "12 kap. 40 § JB",
+  },
+  {
+    id: "renovering",
+    title: "Renovering & underhåll",
+    tag: "Vanlig tvist",
+    icon: "Wrench",
+    summary: "Vem ansvarar för vad?",
+    content: `Hyresvärden ansvarar för att lägenheten är i gott bruksskick under hela hyrestiden (12 kap. 15 § JB). Det inkluderar reparationer av vitvaror, VVS, el och byggnadsdelar. Du som hyresgäst ansvarar normalt för lindriga reparationer och för skador du själv orsakat. Om hyresvärden utför renoveringar som väsentligt försämrar ditt boende kan du ha rätt till hyresnedsättning. Dokumentera alltid lägenhetens skick vid in- och utflyttning med foton.`,
+    lawRef: "12 kap. 15 § JB",
+  },
+  {
+    id: "hyreshojning",
+    title: "Hyreshöjning",
+    tag: "Aktuellt 2025",
+    icon: "TrendingUp",
+    summary: "Dina rättigheter vid höjning",
+    content: `Hyresvärden måste meddela en hyreshöjning minst 3 månader i förväg. Du har rätt att tacka nej och kräva att hyran prövas av Hyresnämnden. Hyran ska vara skälig enligt bruksvärdesprincipen — dvs. jämförbar med hyran för likvärdiga lägenheter i samma område. En indexklausul som ger orimliga höjningar kan alltid prövas (12 kap. 55 § JB).`,
+    lawRef: "12 kap. 55 § JB",
+  },
+  {
+    id: "uppsagning",
+    title: "Uppsägning & vräkning",
+    tag: "Allvarligt",
+    icon: "DoorOpen",
+    summary: "Vad gäller om du sägs upp?",
+    content: `En hyresvärd kan bara vräka dig via Kronofogden efter ett domstolsbeslut — du kan aldrig kastas ut utan rättslig process. Du har alltid rätt till 1–3 månaders uppsägningstid beroende på avtalets längd. Om du bestrider uppsägningen måste du hänskjuta ärendet till Hyresnämnden inom 2 månader. Kontakta alltid Hyresnämnden eller en jurist innan du accepterar en uppsägning.`,
+    lawRef: "12 kap. 46–49 §§ JB",
+  },
+  {
+    id: "sambo",
+    title: "Sambo & övertagande",
+    tag: "Familjerätt",
+    icon: "Heart",
+    summary: "Rätt att ta över hyresrätten",
+    content: `Vid dödsfall eller separation kan en sambo eller make ha rätt att ta över hyresrätten. Det krävs att personen haft sin permanenta bostad i lägenheten, och att ett övertagande är skäligt mot hyresvärden. Ansökan görs hos Hyresnämnden. Vid dödsfall ska anmälan göras inom en månad.`,
+    lawRef: "12 kap. 33–34 §§ JB",
+  },
+];

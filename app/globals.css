@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand-blue:      #1a56a0;
+  --brand-blue-dark: #0c447c;
+  --brand-blue-light:#e6f1fb;
+  --radius: 0.5rem;
+}
+
+@layer base {
+  * { @apply border-gray-200; }
+  body { @apply bg-gray-50 text-gray-900 antialiased; }
+}
+
+@layer utilities {
+  .status-ok {
+    @apply bg-[#eaf3de] border border-[#97c459] text-[#27500a];
+  }
+  .status-warn {
+    @apply bg-[#faeeda] border border-[#ef9f27] text-[#633806];
+  }
+  .status-danger {
+    @apply bg-[#fcebeb] border border-[#f09595] text-[#791f1f];
+  }
+}
