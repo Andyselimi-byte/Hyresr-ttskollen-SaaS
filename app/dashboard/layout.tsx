@@ -1,12 +1,11 @@
 "use client";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
   Home, BarChart2, BookOpen, FileText, Mail,
   LogOut, Menu, X, Crown, Shield,
 } from "lucide-react";
-import { createClient } from "@/lib/supabase";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Hem", icon: Home },
@@ -20,14 +19,6 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  async function handleLogout() {
-    try {
-      const supabase = createClient();
-      await supabase.auth.signOut({ scope: "global" });
-    } catch {}
-    // Force full page reload to clear all state
-    window.location.replace("/auth/login");
-  }
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
       <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
@@ -70,13 +61,15 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
           <Crown className="h-3.5 w-3.5 shrink-0" />
           <span className="font-medium">Uppgradera till Premium — 79 kr/mån</span>
         </div>
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full text-left"
-        >
-          <LogOut className="h-4 w-4" />
-          Logga ut
-        </button>
+        <form action="/api/auth/logout" method="POST">
+          <button
+            type="submit"
+            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full text-left"
+          >
+            <LogOut className="h-4 w-4" />
+            Logga ut
+          </button>
+        </form>
       </div>
     </div>
   );
