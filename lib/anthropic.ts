@@ -6,7 +6,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 export async function analyzeContract(contractText: string): Promise<ContractAnalysis> {
   const response = await client.messages.create({
     model: "claude-opus-4-8",
-    max_tokens: 2000,
+    max_tokens: 4000,
     system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster.
 Din uppgift är att granska hyresavtal och identifiera klausuler som hyresgästen
 bör uppmärksamma — som information, INTE som juridisk rådgivning.
@@ -40,7 +40,15 @@ JSON-format:
   const text = response.content[0].type === "text" ? response.content[0].text : "";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error("Ogiltigt svar från AI-tjänsten");
-  return JSON.parse(jsonMatch[0]) as ContractAnalysis;
+  try {
+    return JSON.parse(jsonMatch[0]) as ContractAnalysis;
+  } catch {
+    // Try to extract partial JSON
+    const cleaned = jsonMatch[0]
+      .replace(/,\s*([}\]])/g, "$1")
+      .replace(/([{,]\s*)(\w+):/g, '$1"$2":');
+    return JSON.parse(cleaned) as ContractAnalysis;
+  }
 }
 
 export async function askQuestion(question: string, context?: string): Promise<string> {
