@@ -1,8 +1,18 @@
 import { NextResponse } from "next/server";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
-export async function POST() {
+export async function POST(request: Request) {
   const supabase = await createServerSupabaseClient();
   await supabase.auth.signOut();
-  return NextResponse.redirect(new URL("/auth/login", process.env.NEXT_PUBLIC_APP_URL ?? "https://project-j339s.vercel.app"), { status: 302 });
+
+  const response = NextResponse.json({ success: true });
+  // Clear all supabase auth cookies
+  const cookieHeader = request.headers.get("cookie") ?? "";
+  const cookieNames = cookieHeader.split(";").map(c => c.trim().split("=")[0]);
+  for (const name of cookieNames) {
+    if (name.includes("supabase") || name.includes("sb-")) {
+      response.cookies.set(name, "", { maxAge: 0, path: "/" });
+    }
+  }
+  return response;
 }

@@ -29,7 +29,8 @@ export async function middleware(request: NextRequest) {
   if (isDashboard && !user) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
-  if (isAuth && user) {
+  const isAuthLogin = request.nextUrl.pathname === "/auth/login" || request.nextUrl.pathname === "/auth/register";
+  if (isAuthLogin && user) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
