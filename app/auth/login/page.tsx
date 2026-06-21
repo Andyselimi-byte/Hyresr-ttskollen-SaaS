@@ -48,10 +48,10 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4">
+          <Link href="/" className="inline-flex items-center gap-2 mb-4 hover:opacity-80">
             <Shield className="h-7 w-7 text-[#1a56a0]" />
             <span className="text-xl font-bold text-[#1a56a0]">Hyresrättskollen</span>
-          </div>
+          </Link>
           <h1 className="text-2xl font-bold text-gray-900">Logga in</h1>
           <p className="text-gray-500 text-sm mt-1">Välkommen tillbaka</p>
         </div>
