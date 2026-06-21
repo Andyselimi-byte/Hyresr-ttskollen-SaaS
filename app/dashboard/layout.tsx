@@ -17,7 +17,6 @@ const NAV_ITEMS = [
 
 function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
-  const router = useRouter();
 
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
