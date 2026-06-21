@@ -33,8 +33,12 @@ export default function RegisterPage() {
     } else {
       // Auto-login after registration
       const supabase = createClient();
-      await supabase.auth.signInWithPassword({ email, password });
-      window.location.href = "/dashboard";
+      const { error: loginErr } = await supabase.auth.signInWithPassword({ email, password });
+      if (loginErr) {
+        setError("Konto skapat men inloggning misslyckades: " + loginErr.message);
+      } else {
+        window.location.href = "/dashboard";
+      }
     }
     setLoading(false);
   }
