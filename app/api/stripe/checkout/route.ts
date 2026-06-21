@@ -39,6 +39,6 @@ export async function GET(request: NextRequest) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[stripe-checkout]", msg);
-    return NextResponse.redirect(new URL(`/dashboard?stripe_error=${encodeURIComponent(msg)}`, request.url));
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
