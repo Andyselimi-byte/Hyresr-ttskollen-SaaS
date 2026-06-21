@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeContract } from "@/lib/anthropic";
+import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Inte inloggad." }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
 
@@ -18,8 +25,13 @@ export async function POST(request: NextRequest) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const pdfParse = (await import("pdf-parse")).default;
-    const parsed = await pdfParse(buffer);
-    const text = parsed.text.slice(0, 12000);
+    let parsed;
+    try {
+      parsed = await pdfParse(buffer);
+    } catch {
+      return NextResponse.json({ error: "Kunde inte läsa PDF:en. Kontrollera att filen inte är skadad." }, { status: 400 });
+    }
+    const text = (parsed.text ?? "").slice(0, 12000);
 
     if (!text.trim()) {
       return NextResponse.json({ error: "Kunde inte läsa text från PDF:en. Kontrollera att filen inte är skannad." }, { status: 400 });
@@ -29,7 +41,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(analysis);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
-    console.error("[analyze-contract] FULL ERROR:", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    console.error("[analyze-contract]", msg);
+    return NextResponse.json({ error: "Analys misslyckades. Försök igen." }, { status: 500 });
   }
 }

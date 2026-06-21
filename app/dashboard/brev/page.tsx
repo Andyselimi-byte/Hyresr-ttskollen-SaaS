@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Mail, Copy, Download, Check, TrendingUp, Users, Wrench, FileText } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
+import { PremiumGate } from "@/components/PremiumGate";
 import { LETTER_TEMPLATES } from "@/lib/letter-templates";
 
 const ICONS: Record<string, React.ElementType> = { TrendingUp, Users, Wrench, FileText };
@@ -49,6 +50,7 @@ export default function BrevPage() {
         </p>
       </div>
 
+      <PremiumGate featureName="Brevgenerator">
       {!selectedId && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {LETTER_TEMPLATES.map(tmpl => {
@@ -140,6 +142,7 @@ export default function BrevPage() {
       )}
 
       <DisclaimerBanner />
+      </PremiumGate>
     </div>
   );
 }

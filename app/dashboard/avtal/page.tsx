@@ -2,6 +2,7 @@
 import { useState, useRef } from "react";
 import { FileText, Upload, AlertCircle, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
+import { PremiumGate } from "@/components/PremiumGate";
 import type { ContractAnalysis } from "@/types";
 
 const STATUS_CONFIG = {
@@ -64,6 +65,7 @@ export default function AvtalPage() {
           Ladda upp ditt hyresavtal (PDF) för AI-driven analys av klausuler.
         </p>
       </div>
+      <PremiumGate featureName="Avtalsgranskning">
 
       {!analysis && (
         <div className="bg-white border border-gray-200 rounded-xl p-6 mb-6">
@@ -162,6 +164,7 @@ export default function AvtalPage() {
       )}
 
       <DisclaimerBanner />
+      </PremiumGate>
     </div>
   );
 }
