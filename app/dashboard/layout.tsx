@@ -21,8 +21,12 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
   const router = useRouter();
 
   async function handleLogout() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/auth/login";
+    try {
+      const supabase = createClient();
+      await supabase.auth.signOut({ scope: "global" });
+    } catch {}
+    // Force full page reload to clear all state
+    window.location.replace("/auth/login");
   }
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">

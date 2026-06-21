@@ -24,19 +24,14 @@ export async function middleware(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
 
   const isDashboard = request.nextUrl.pathname.startsWith("/dashboard");
-  const isAuth = request.nextUrl.pathname.startsWith("/auth");
 
   if (isDashboard && !user) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
-  }
-  const isAuthLogin = request.nextUrl.pathname === "/auth/login" || request.nextUrl.pathname === "/auth/register";
-  if (isAuthLogin && user) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/:path*"],
+  matcher: ["/dashboard/:path*"],
 };
