@@ -23,7 +23,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
   async function handleLogout() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/auth/login");
+    window.location.href = "/auth/login";
   }
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
