@@ -57,7 +57,7 @@ export default function RattigheterPage() {
       {filtered.length === 0 && (
         <div className="text-center py-12 text-gray-400">
           <BookOpen className="h-10 w-10 mx-auto mb-3 opacity-50" />
-          <p>Inga träffar för "{search}"</p>
+          <p>Inga träffar för &quot;{search}&quot;</p>
         </div>
       )}
 
