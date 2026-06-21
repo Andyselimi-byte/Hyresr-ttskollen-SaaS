@@ -22,14 +22,27 @@ Regler: status "flag" = olaglig klausul, "warn" = tveksam, "ok" = normal.`,
   const text = response.content[0].type === "text" ? response.content[0].text : "";
   const jsonMatch = text.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error("Ogiltigt svar från AI-tjänsten");
+
+  let jsonStr = jsonMatch[0];
+
+  // Remove trailing commas before ] or }
+  jsonStr = jsonStr.replace(/,(\s*[}\]])/g, "$1");
+
+  // Try to parse, if fails truncate at last complete object
   try {
-    return JSON.parse(jsonMatch[0]) as ContractAnalysis;
+    return JSON.parse(jsonStr) as ContractAnalysis;
   } catch {
-    // Try to extract partial JSON
-    const cleaned = jsonMatch[0]
-      .replace(/,\s*([}\]])/g, "$1")
-      .replace(/([{,]\s*)(\w+):/g, '$1"$2":');
-    return JSON.parse(cleaned) as ContractAnalysis;
+    // Find last complete clause by truncating at last }]
+    const lastComplete = jsonStr.lastIndexOf("}]");
+    if (lastComplete > 0) {
+      const truncated = jsonStr.slice(0, lastComplete + 2) + ',"summary":"Analysen är ofullständig, försök igen."}';
+      try {
+        return JSON.parse(truncated) as ContractAnalysis;
+      } catch {
+        throw new Error("Kunde inte tolka AI-svaret");
+      }
+    }
+    throw new Error("Kunde inte tolka AI-svaret");
   }
 }
 
