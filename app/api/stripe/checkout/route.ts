@@ -37,7 +37,8 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.redirect(session.url!);
   } catch (err) {
-    console.error("[stripe-checkout]", err instanceof Error ? err.message : err);
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[stripe-checkout]", msg);
+    return NextResponse.redirect(new URL(`/dashboard?stripe_error=${encodeURIComponent(msg)}`, request.url));
   }
 }
