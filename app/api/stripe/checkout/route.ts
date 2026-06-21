@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
       customer: customerId,
       mode: "subscription",
       line_items: [{ price: process.env.STRIPE_PRICE_MONTHLY!, quantity: 1 }],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=1`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+      success_url: `${request.nextUrl.origin}/dashboard?upgraded=1`,
+      cancel_url: `${request.nextUrl.origin}/dashboard`,
     });
 
     return NextResponse.redirect(session.url!);
