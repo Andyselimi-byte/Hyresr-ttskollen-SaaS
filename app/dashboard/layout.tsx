@@ -56,10 +56,13 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       <div className="px-3 pb-4 space-y-2 border-t border-gray-100 pt-3">
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#1a56a0] to-[#0c447c] text-white text-xs">
+        <a
+          href="/api/stripe/checkout"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#1a56a0] to-[#0c447c] text-white text-xs hover:opacity-90 transition-opacity"
+        >
           <Crown className="h-3.5 w-3.5 shrink-0" />
           <span className="font-medium">Uppgradera till Premium — 79 kr/mån</span>
-        </div>
+        </a>
         <a
           href="/api/auth/logout"
           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700"
