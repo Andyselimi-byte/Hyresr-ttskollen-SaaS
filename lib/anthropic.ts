@@ -7,33 +7,15 @@ export async function analyzeContract(contractText: string): Promise<ContractAna
   const response = await client.messages.create({
     model: "claude-opus-4-8",
     max_tokens: 4000,
-    system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster.
-Din uppgift är att granska hyresavtal och identifiera klausuler som hyresgästen
-bör uppmärksamma — som information, INTE som juridisk rådgivning.
+    system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster. Granska hyresavtal och returnera ENDAST giltig JSON, inget annat text. Max 8 klausuler. Håll finding och information korta (max 100 tecken vardera).
 
-REGLER:
-- Formulera alltid fynd som "Enligt 12 kap. X § JB..." eller "Klausulen avviker från..."
-- Säg ALDRIG "Du bör göra X" eller "Du har rätt till X" i bestämd form
-- Citera alltid lagstöd (JB-paragraf) för varje observation
-- Returnera ALLTID JSON i formatet nedan
-- Bedöm varje klausul som: "ok", "warn" eller "flag"
+Format:
+{"clauses":[{"title":"string","status":"ok|warn|flag","finding":"string","information":"string","lawRef":"string"}],"summary":"string"}
 
-JSON-format:
-{
-  "clauses": [
-    {
-      "title": "Klausulens namn",
-      "status": "ok" | "warn" | "flag",
-      "finding": "Vad klausulen säger",
-      "information": "Relevant information från hyreslagen",
-      "lawRef": "12 kap. X § JB"
-    }
-  ],
-  "summary": "Kort sammanfattning av analysen"
-}`,
+Regler: status "flag" = olaglig klausul, "warn" = tveksam, "ok" = normal.`,
     messages: [{
       role: "user",
-      content: `Granska detta hyresavtal och returnera JSON:\n\n${contractText}`,
+      content: `Granska detta hyresavtal:\n\n${contractText.slice(0, 6000)}`,
     }],
   });
 

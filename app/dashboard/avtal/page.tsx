@@ -38,7 +38,7 @@ export default function AvtalPage() {
       if (!res.ok) throw new Error(data.error ?? "Något gick fel");
       setAnalysis(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Något gick fel. Försök igen.");
+      setError(err instanceof Error ? err.message : "Okänt fel");
     } finally {
       setLoading(false);
     }
