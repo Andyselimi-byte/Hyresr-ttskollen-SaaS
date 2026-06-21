@@ -20,16 +20,21 @@ export default function RegisterPage() {
     if (!agreed) { setError("Du måste godkänna användarvillkoren för att fortsätta."); return; }
     setLoading(true);
     setError("");
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard` },
+
+    const res = await fetch("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
     });
-    if (error) {
-      setError("Kunde inte skapa konto. E-posten kan redan vara registrerad.");
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(data.error || "Kunde inte skapa konto.");
     } else {
-      setSuccess(true);
+      // Auto-login after registration
+      const supabase = createClient();
+      await supabase.auth.signInWithPassword({ email, password });
+      window.location.href = "/dashboard";
     }
     setLoading(false);
   }
@@ -46,20 +51,7 @@ export default function RegisterPage() {
           <p className="text-gray-500 text-sm mt-1">Gratis — kom igång direkt</p>
         </div>
 
-        {success ? (
-          <div className="bg-[#eaf3de] border border-[#97c459] rounded-xl p-5 text-center">
-            <p className="font-semibold text-[#27500a] mb-1">Konto skapat!</p>
-            <p className="text-sm text-[#27500a]/80">
-              Kontrollera din e-post ({email}) för att bekräfta ditt konto.
-            </p>
-            <Link
-              href="/auth/login"
-              className="inline-block mt-3 text-sm font-medium text-[#1a56a0] hover:underline"
-            >
-              Till inloggning →
-            </Link>
-          </div>
-        ) : (
+        {(
           <div className="bg-white border border-gray-200 rounded-xl p-6">
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
