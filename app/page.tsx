@@ -111,11 +111,17 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-gray-100 py-8 px-6">
-        <div className="max-w-5xl mx-auto text-center text-xs text-gray-400">
-          <p className="mb-2">
+        <div className="max-w-5xl mx-auto text-center text-xs text-gray-400 space-y-3">
+          <p>
             Hyresrättskollen är en informationstjänst och utgör inte juridisk rådgivning.
             Informationen baseras på 12 kap. JB (Jordabalken) och SCB-statistik.
           </p>
+          <div className="flex justify-center gap-4 flex-wrap">
+            <Link href="/integritetspolicy" className="hover:text-gray-600 underline">Integritetspolicy</Link>
+            <Link href="/anvandarvillkor" className="hover:text-gray-600 underline">Användarvillkor</Link>
+            <Link href="/faq" className="hover:text-gray-600 underline">FAQ</Link>
+            <a href="mailto:support@hyresrattskollen.se" className="hover:text-gray-600 underline">Support</a>
+          </div>
           <p>© {new Date().getFullYear()} Hyresrättskollen</p>
         </div>
       </footer>

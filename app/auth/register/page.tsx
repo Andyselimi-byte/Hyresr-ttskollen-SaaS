@@ -12,10 +12,12 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   async function handleRegister(e: React.FormEvent) {
     e.preventDefault();
     if (password.length < 8) { setError("Lösenordet måste vara minst 8 tecken."); return; }
+    if (!agreed) { setError("Du måste godkänna användarvillkoren för att fortsätta."); return; }
     setLoading(true);
     setError("");
     const supabase = createClient();
@@ -89,18 +91,30 @@ export default function RegisterPage() {
                 </p>
               )}
 
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={e => setAgreed(e.target.checked)}
+                  className="mt-0.5 accent-[#1a56a0]"
+                />
+                <span className="text-xs text-gray-600 leading-relaxed">
+                  Jag har läst och godkänner{" "}
+                  <Link href="/anvandarvillkor" target="_blank" className="text-[#1a56a0] underline">användarvillkoren</Link>
+                  {" "}och{" "}
+                  <Link href="/integritetspolicy" target="_blank" className="text-[#1a56a0] underline">integritetspolicyn</Link>.
+                  Jag förstår att Hyresrättskollen är ett informationsverktyg och inte juridisk rådgivning.
+                </span>
+              </label>
+
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !agreed}
                 className="w-full bg-[#1a56a0] hover:bg-[#0c447c] disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm"
               >
                 {loading ? "Skapar konto..." : "Skapa gratis konto"}
               </button>
             </form>
-
-            <p className="text-xs text-gray-400 text-center mt-3">
-              Genom att registrera dig godkänner du våra användarvillkor.
-            </p>
           </div>
         )}
 
