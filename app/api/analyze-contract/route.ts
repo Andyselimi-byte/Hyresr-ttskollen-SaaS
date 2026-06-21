@@ -28,7 +28,8 @@ export async function POST(request: NextRequest) {
     const analysis = await analyzeContract(text);
     return NextResponse.json(analysis);
   } catch (err) {
-    console.error("[analyze-contract]", err instanceof Error ? err.message : err);
-    return NextResponse.json({ error: "Analys misslyckades. Försök igen." }, { status: 500 });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("[analyze-contract] FULL ERROR:", msg);
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }
