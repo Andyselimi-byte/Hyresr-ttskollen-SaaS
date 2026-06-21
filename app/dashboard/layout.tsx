@@ -60,15 +60,13 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
           <Crown className="h-3.5 w-3.5 shrink-0" />
           <span className="font-medium">Uppgradera till Premium — 79 kr/mån</span>
         </div>
-        <form action="/api/auth/logout" method="POST">
-          <button
-            type="submit"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700 w-full text-left"
-          >
-            <LogOut className="h-4 w-4" />
-            Logga ut
-          </button>
-        </form>
+        <Link
+          href="/api/auth/logout"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+        >
+          <LogOut className="h-4 w-4" />
+          Logga ut
+        </Link>
       </div>
     </div>
   );
