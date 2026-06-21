@@ -5,7 +5,7 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function analyzeContract(contractText: string): Promise<ContractAnalysis> {
   const response = await client.messages.create({
-    model: "claude-opus-4-5",
+    model: "claude-opus-4-8",
     max_tokens: 2000,
     system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster.
 Din uppgift är att granska hyresavtal och identifiera klausuler som hyresgästen
@@ -45,7 +45,7 @@ JSON-format:
 
 export async function askQuestion(question: string, context?: string): Promise<string> {
   const response = await client.messages.create({
-    model: "claude-opus-4-5",
+    model: "claude-opus-4-8",
     max_tokens: 1000,
     system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster.
 Svara på frågor om hyresrätt baserat på 12 kap. Jordabalken (JB).
