@@ -21,8 +21,7 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
   const router = useRouter();
 
   async function handleLogout() {
-    const supabase = createClient();
-    await supabase.auth.signOut();
+    await fetch("/api/auth/logout", { method: "POST" });
     window.location.href = "/auth/login";
   }
   return (
