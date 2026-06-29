@@ -18,6 +18,10 @@ export interface RentInput {
 export interface RentResult {
   currentRent: number;
   referenceRent: number;
+  referenceMin: number;
+  referenceMax: number;
+  kvmRate: number;
+  currentKvmRate: number;
   difference: number;
   differencePercent: number;
   status: "ok" | "warn" | "danger";

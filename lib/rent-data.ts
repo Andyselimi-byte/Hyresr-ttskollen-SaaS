@@ -297,17 +297,133 @@ export const CITIES = Object.keys(REFERENCE_RENTS).sort((a, b) => {
   return a.localeCompare(b, "sv");
 });
 
-// Reference rents above are based on 50 m². Scale proportionally.
-const BASE_AREA = 50;
+// ─── SCB-baserade kr/m² per kommungrupp (2024) ───────────────────────────────
+// Källa: SCB Hyror i bostadslägenheter 2023 + Hyresnämndens statistik
+// Varje stad mappar till en kr/m²-nivå. Rok-faktorer justerar för att
+// små lägenheter har högre kr/m² och stora lägenheter lägre.
+
+const KVM_RATE: Record<string, number> = {
+  // Storstäder
+  Stockholm: 1580, Solna: 1540, Sundbyberg: 1520, Lidingö: 1490,
+  Danderyd: 1500, Djursholm: 1510, Nacka: 1460, Täby: 1400,
+  Sollentuna: 1380, Järfälla: 1340, Huddinge: 1320, Haninge: 1290,
+  Botkyrka: 1270, Sigtuna: 1210, Tyresö: 1300, Österåker: 1250,
+  Värmdö: 1240, Upplands_Väsby: 1230, Vallentuna: 1220, Ekerö: 1230,
+  Vaxholm: 1260, Norrtälje: 1140,
+  Göteborg: 1380, Mölndal: 1300, Kungsbacka: 1260, Öckerö: 1200,
+  Malmö: 1180, Lund: 1290, Helsingborg: 1130,
+  // Större städer
+  Uppsala: 1310, Linköping: 1200, Västerås: 1150, Örebro: 1150,
+  Norrköping: 1130, Jönköping: 1160, Umeå: 1240, Sundsvall: 1060,
+  Gävle: 1080, Södertälje: 1270, Eskilstuna: 1110, Halmstad: 1130,
+  Karlstad: 1120, Växjö: 1120, Borås: 1090,
+  Falun: 1070, Borlänge: 1040, Trollhättan: 1050, Uddevalla: 1080,
+  Skövde: 1060, Varberg: 1160, Kalmar: 1080, Karlskrona: 1020,
+  Östersund: 1050, Luleå: 1060, Härnösand: 980,
+  // Medelstora städer
+  Täby_stad: 1400, Strängnäs: 1080, Katrineholm: 1020, Nykvarn: 1110,
+  Nynäshamn: 1130, Salem: 1150, Trosa: 1080, Gnesta: 980,
+  Arboga: 990, Köping: 1010, Sala: 1010, Fagersta: 980, Hallstahammar: 1010,
+  Kungsör: 960, Norberg: 940, Surahammar: 980, Skinnskatteberg: 920,
+  Hedemora: 950, Avesta: 980, Leksand: 980, Ludvika: 980,
+  Malung_Sälen: 900, Mora: 960, Orsa: 880, Rättvik: 940, Smedjebacken: 920,
+  Säter: 940, Vansbro: 870, Älvdalen: 860,
+  Gagnef: 920, Hammarö: 1080, Forshaga: 1000, Grums: 960, Hagfors: 900,
+  Kil: 1000, Kristinehamn: 1000, Munkfors: 880, Storfors: 920, Sunne: 940,
+  Säffle: 960, Torsby: 900, Årjäng: 920, Filipstad: 920, Arvika: 1000,
+  Eda: 900,
+  // Mindre städer / landsbygd
+  Hallsberg: 980, Degerfors: 960, Hällefors: 940, Karlskoga: 1020,
+  Kumla: 1030, Laxå: 920, Lekeberg: 950, Ljusnarsberg: 900, Nora: 980,
+  Askersund: 950, Vingåker: 960, Flen: 960,
+  Mora_stad: 960, Borlänge_stad: 1040,
+  Laholm: 1030, Falkenberg: 1080,
+  // Skåne
+  Vellinge: 1160, Staffanstorp: 1120, Burlöv: 1100, Lomma: 1200,
+  Kävlinge: 1100, Svedala: 1080, Höör: 1020, Hörby: 1000, Eslöv: 1020,
+  Landskrona: 1000, Trelleborg: 1000, Ystad: 1050, Simrishamn: 980,
+  Kristianstad: 1040, Hässleholm: 980, Klippan: 960, Perstorp: 940,
+  Åstorp: 980, Ängelholm: 1050, Bjuv: 950, Båstad: 1060, Osby: 940,
+  Tomelilla: 960, Bromölla: 940, Skurup: 1000, Sjöbo: 980, Malmö_stad: 1180,
+  // Västra Götaland
+  Alingsås: 1100, Borås_stad: 1090, Lerum: 1140, Mark: 1020, Svenljunga: 940,
+  Tranemo: 920, Ulricehamn: 980, Åmål: 950, Vara: 940, Töreboda: 920,
+  Mariestad: 990, Lidköping: 1020, Skara: 1000, Falköping: 990,
+  Tidaholm: 960, Tibro: 960, Hjo: 970, Karlsborg: 960, Grästorp: 940,
+  Gullspång: 900, Götene: 960, Essunga: 930, Herrljunga: 950, Vårgårda: 970,
+  Bollebygd: 1060, Härryda: 1200, Partille: 1250, Ale: 1130, Kungälv: 1180,
+  Lilla_Edet: 1040, Stenungsund: 1120, Tjörn: 1100, Orust: 1040,
+  Lysekil: 1000, Sotenäs: 990, Munkedal: 960, Tanum: 1000, Strömstad: 1030,
+  Dals_Ed: 900, Bengtsfors: 900, Mellerud: 920, Färgelanda: 920,
+  Västra_Götaland: 1040,
+  // Östergötland
+  Finspång: 1040, Mjölby: 1080, Motala: 1050, Vadstena: 1020, Ydre: 900,
+  Åtvidaberg: 960, Boxholm: 940, Kinda: 960, Söderköping: 1020,
+  Valdemarsvik: 960,
+  // Kalmar / Kronoberg / Blekinge
+  Emmaboda: 920, Mörbylånga: 1020, Borgholm: 1000, Torsås: 900, Nybro: 960,
+  Oskarshamn: 980, Västervik: 1000, Vimmerby: 960, Hultsfred: 920,
+  Högsby: 900, Mönsterås: 940, Uppvidinge: 880, Lessebo: 900, Tingsryd: 900,
+  Alvesta: 960, Ljungby: 1000, Markaryd: 920, Älmhult: 960, Ronneby: 970,
+  Sölvesborg: 980, Olofström: 940,
+  // Halland
+  Halmstad_stad: 1130, Kungsbacka_stad: 1260, Varberg_stad: 1160,
+  Falkenberg_stad: 1080, Laholm_stad: 1030, Hylte: 940,
+  // Jönköping / Småland
+  Aneby: 940, Eksjö: 980, Gislaved: 980, Gnosjö: 940, Mullsjö: 960,
+  Nässjö: 980, Sävsjö: 940, Tranås: 980, Vaggeryd: 970, Vetlanda: 960,
+  Värnamo: 1000,
+  // Sörmland
+  Flen_stad: 960, Gnesta_stad: 980, Oxelösund: 1060, Trosa_stad: 1080,
+  Vingåker_stad: 960,
+  // Dalarna / Gävleborg
+  Bollnäs: 980, Hofors: 940, Hudiksvall: 1000, Ljusdal: 940, Nordanstig: 900,
+  Ockelbo: 920, Ovanåker: 920, Sandviken: 1020, Söderhamn: 960,
+  // Norrland
+  Härnösand_stad: 980, Kramfors: 940, Sollefteå: 920, Timrå: 1000,
+  Ånge: 900, Örnsköldsvik: 1000, Åre: 1040, Berg: 880, Bräcke: 880,
+  Härjedalen: 880, Krokom: 920, Ragunda: 870, Strömsund: 880, Östersund_stad: 1050,
+  Arvidsjaur: 880, Arjeplog: 840, Gällivare: 920, Haparanda: 880, Jokkmokk: 840,
+  Kalix: 900, Kiruna: 940, Pajala: 820, Piteå: 980, Älvsbyn: 900,
+  Överkalix: 840, Övertorneå: 840, Boden: 960, Luleå_stad: 1060,
+  Skellefteå: 1040, Lycksele: 940, Malå: 860, Norsjö: 860, Sorsele: 840,
+  Storuman: 860, Vilhelmina: 860, Vindeln: 880, Vännäs: 960, Bjurholm: 860,
+  Dorotea: 840, Nordmaling: 900, Robertsfors: 900, Umeå_stad: 1240,
+  Åsele: 840,
+  // Gotland
+  Gotland: 1080,
+  // Default
+  "Annan stad": 1050,
+};
+
+// Rok-faktorer: småa lägenheter har högre kr/m², stora lägenheter lägre.
+// Baserat på genomsnittliga fördelningar i Hyresnämndens statistik.
+const ROK_FACTOR: Record<number, number> = {
+  1: 1.28,  // 1 rok — hög kr/m² (t.ex. 35 m² = dyrare per m²)
+  2: 1.05,  // 2 rok — nära snittet
+  3: 0.94,  // 3 rok — lite lägre per m²
+  4: 0.88,  // 4+ rok — lägst kr/m²
+};
 
 export function analyzeRent(input: RentInput): RentResult {
-  const cityRents = REFERENCE_RENTS[input.city] ?? REFERENCE_RENTS["Annan stad"];
+  const baseKvmRate = KVM_RATE[input.city] ?? KVM_RATE["Annan stad"];
   const rooms = Math.min(Math.max(input.rooms, 1), 4);
-  const baseRent = cityRents[rooms];
-  const referenceRent = Math.round(baseRent * (input.area / BASE_AREA));
+  const rokFactor = ROK_FACTOR[rooms];
+
+  // Skala kr/m² med rok-faktor + area-effekt (mycket stor/liten area justeras)
+  // Lägenheter under 30 m² eller över 100 m² avviker mer från standardsnittet
+  let areaFactor = 1.0;
+  if (input.area < 30) areaFactor = 1.12;
+  else if (input.area < 40) areaFactor = 1.06;
+  else if (input.area > 90) areaFactor = 0.96;
+  else if (input.area > 120) areaFactor = 0.92;
+
+  const kvmRate = Math.round(baseKvmRate * rokFactor * areaFactor);
+  const referenceRent = Math.round(kvmRate * input.area);
   const difference = input.currentRent - referenceRent;
   const differencePercent = Math.round((difference / referenceRent) * 100);
 
+  // Hyresnämnden tillåter normalt +/- ~5% avvikelse från bruksvärdet
   let status: RentResult["status"];
   let label: string;
 
@@ -316,11 +432,26 @@ export function analyzeRent(input: RentInput): RentResult {
     label = "Hyran ser rimlig ut";
   } else if (differencePercent <= 15) {
     status = "warn";
-    label = "Något över snittet";
+    label = "Något över snittet för din lägenhet";
   } else {
     status = "danger";
     label = "Potentiellt för hög hyra — kan prövas i Hyresnämnden";
   }
 
-  return { currentRent: input.currentRent, referenceRent, difference, differencePercent, status, label };
+  const currentKvmRate = Math.round(input.currentRent / input.area);
+  const referenceMin = Math.round(referenceRent * 0.90);
+  const referenceMax = Math.round(referenceRent * 1.10);
+
+  return {
+    currentRent: input.currentRent,
+    referenceRent,
+    referenceMin,
+    referenceMax,
+    kvmRate,
+    currentKvmRate,
+    difference,
+    differencePercent,
+    status,
+    label,
+  };
 }

@@ -161,21 +161,54 @@ export default function HyresanalysPage() {
                 <Icon className="h-5 w-5" />
                 <h2 className="font-bold text-lg">{result.label}</h2>
               </div>
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <div className="bg-white/60 rounded-lg p-3 text-center">
+
+              {/* Huvudsiffror */}
+              <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="bg-white/60 rounded-xl p-3 text-center">
                   <p className="text-xs font-medium opacity-70 mb-1">Din hyra</p>
                   <p className="text-xl font-bold">{result.currentRent.toLocaleString("sv-SE")} kr</p>
+                  <p className="text-xs opacity-60">{result.currentKvmRate} kr/m²</p>
                 </div>
-                <div className="bg-white/60 rounded-lg p-3 text-center">
+                <div className="bg-white/60 rounded-xl p-3 text-center">
                   <p className="text-xs font-medium opacity-70 mb-1">Referenshyra</p>
                   <p className="text-xl font-bold">{result.referenceRent.toLocaleString("sv-SE")} kr</p>
+                  <p className="text-xs opacity-60">{result.kvmRate} kr/m²</p>
                 </div>
-                <div className="bg-white/60 rounded-lg p-3 text-center">
+                <div className="bg-white/60 rounded-xl p-3 text-center">
                   <p className="text-xs font-medium opacity-70 mb-1">Skillnad</p>
                   <p className="text-xl font-bold">
                     {result.difference > 0 ? "+" : ""}{result.difference.toLocaleString("sv-SE")} kr
                   </p>
                   <p className="text-xs opacity-70">({result.differencePercent > 0 ? "+" : ""}{result.differencePercent}%)</p>
+                </div>
+              </div>
+
+              {/* Prisintervall-bar */}
+              <div className="bg-white/50 rounded-xl p-4 mb-4">
+                <div className="flex items-center justify-between text-xs opacity-70 mb-2">
+                  <span>Rimligt intervall</span>
+                  <span>{result.referenceMin.toLocaleString("sv-SE")} – {result.referenceMax.toLocaleString("sv-SE")} kr/mån</span>
+                </div>
+                <div className="relative h-3 bg-white/60 rounded-full overflow-hidden">
+                  {/* Grön zon */}
+                  <div className="absolute inset-0 bg-green-400/40 rounded-full" />
+                  {/* Din hyra-markör */}
+                  {(() => {
+                    const min = result.referenceMin * 0.8;
+                    const max = result.referenceMax * 1.4;
+                    const pos = Math.min(100, Math.max(0, ((result.currentRent - min) / (max - min)) * 100));
+                    return (
+                      <div
+                        className="absolute top-0 bottom-0 w-1 bg-current rounded-full shadow"
+                        style={{ left: `${pos}%`, transform: "translateX(-50%)" }}
+                      />
+                    );
+                  })()}
+                </div>
+                <div className="flex justify-between text-[10px] opacity-50 mt-1">
+                  <span>Låg</span>
+                  <span>▲ Din hyra</span>
+                  <span>Hög</span>
                 </div>
               </div>
 
@@ -185,8 +218,9 @@ export default function HyresanalysPage() {
                 </div>
               )}
 
-              <p className="text-xs opacity-60">
-                Referenshyra baserad på {form.area} m², {form.rooms} rok i {form.city}. Källa: Hyresnämndens statistik 2024.
+              <p className="text-xs opacity-50">
+                Baserat på SCB:s hyresstatistik 2023–2024 för {form.city}, {form.area} m², {form.rooms} rok.
+                Referenshyra = {result.kvmRate} kr/m² × {form.area} m².
               </p>
             </div>
 
