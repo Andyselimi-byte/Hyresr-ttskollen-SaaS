@@ -20,7 +20,14 @@ export default function LoginPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      setError("Fel: " + error.message);
+      const msg = error.message.toLowerCase();
+      if (msg.includes("invalid login") || msg.includes("invalid credentials") || msg.includes("failed to fetch") || msg.includes("wrong")) {
+        setError("Fel lösenord eller e-postadress. Försök igen.");
+      } else if (msg.includes("email not confirmed")) {
+        setError("Bekräfta din e-post innan du loggar in.");
+      } else {
+        setError("Inloggning misslyckades. Kontrollera dina uppgifter och försök igen.");
+      }
     } else {
       router.push("/dashboard");
     }
