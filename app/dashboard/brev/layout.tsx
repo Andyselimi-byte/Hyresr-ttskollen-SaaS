@@ -22,7 +22,7 @@ function Sidebar({ onClose, onBuy }: { onClose?: () => void; onBuy: () => void }
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
       <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-        <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link href="/" onClick={onClose} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Shield className="h-6 w-6 text-[#1a56a0]" />
           <span className="font-bold text-[#1a56a0] text-lg leading-tight">
             Hyresrätts<br />kollen
@@ -106,7 +106,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <button onClick={() => setMobileOpen(true)} className="text-gray-500 hover:text-gray-700">
             <Menu className="h-5 w-5" />
           </button>
-          <Link href="/dashboard" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
             <Shield className="h-5 w-5 text-[#1a56a0]" />
             <span className="font-bold text-[#1a56a0] text-base">Hyresrättskollen</span>
           </Link>

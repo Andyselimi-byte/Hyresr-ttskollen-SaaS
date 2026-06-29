@@ -86,7 +86,7 @@ export default function DashboardHomePage() {
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Shield className="h-6 w-6 text-[#1a56a0]" />
             <span className="font-bold text-[#1a56a0] text-lg">Hyresrättskollen</span>
           </Link>
