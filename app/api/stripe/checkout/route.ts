@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
+const PACKAGES: Record<string, { price: number; credits: number }> = {
+  "5":  { price: 7900,  credits: 5  },
+  "10": { price: 12900, credits: 10 },
+  "25": { price: 19900, credits: 25 },
+};
+
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -10,6 +16,9 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
+
+    const pkg = request.nextUrl.searchParams.get("pkg") ?? "10";
+    const packageInfo = PACKAGES[pkg] ?? PACKAGES["10"];
 
     const { data: profile } = await supabase
       .from("profiles")
@@ -29,9 +38,23 @@ export async function GET(request: NextRequest) {
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
-      mode: "subscription",
-      line_items: [{ price: process.env.STRIPE_PRICE_MONTHLY!, quantity: 1 }],
-      success_url: `${request.nextUrl.origin}/dashboard?upgraded=1`,
+      mode: "payment",
+      line_items: [{
+        price_data: {
+          currency: "sek",
+          unit_amount: packageInfo.price,
+          product_data: {
+            name: `${packageInfo.credits} uppladdningar — Hyresrättskollen`,
+            description: `${packageInfo.credits} AI-analyser och brev`,
+          },
+        },
+        quantity: 1,
+      }],
+      metadata: {
+        supabase_user_id: user.id,
+        credits: String(packageInfo.credits),
+      },
+      success_url: `${request.nextUrl.origin}/dashboard?credits_added=${packageInfo.credits}`,
       cancel_url: `${request.nextUrl.origin}/dashboard`,
     });
 

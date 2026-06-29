@@ -16,31 +16,29 @@ export async function POST(request: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET ?? "placeholder");
   } catch {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   try {
-    switch (event.type) {
-      case "customer.subscription.created":
-      case "customer.subscription.updated": {
-        const sub = event.data.object as Stripe.Subscription;
-        const customerId = sub.customer as string;
-        const status = sub.status === "active" ? "premium" : "free";
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const userId = session.metadata?.supabase_user_id;
+      const credits = parseInt(session.metadata?.credits ?? "0", 10);
+
+      if (userId && credits > 0) {
+        const { data } = await supabase
+          .from("profiles")
+          .select("credits")
+          .eq("id", userId)
+          .single();
+
+        const currentCredits = data?.credits ?? 0;
         await supabase
           .from("profiles")
-          .update({ subscription_status: status })
-          .eq("stripe_customer_id", customerId);
-        break;
-      }
-      case "customer.subscription.deleted": {
-        const sub = event.data.object as Stripe.Subscription;
-        await supabase
-          .from("profiles")
-          .update({ subscription_status: "free" })
-          .eq("stripe_customer_id", sub.customer as string);
-        break;
+          .update({ credits: currentCredits + credits })
+          .eq("id", userId);
       }
     }
     return NextResponse.json({ received: true });

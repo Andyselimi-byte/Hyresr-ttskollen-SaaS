@@ -57,11 +57,11 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
       <div className="px-3 pb-4 space-y-2 border-t border-gray-100 pt-3">
         <a
-          href="/api/stripe/checkout"
+          href="/api/stripe/checkout?pkg=10"
           className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#1a56a0] to-[#0c447c] text-white text-xs hover:opacity-90 transition-opacity"
         >
           <Crown className="h-3.5 w-3.5 shrink-0" />
-          <span className="font-medium">Uppgradera till Premium — 79 kr/mån</span>
+          <span className="font-medium">Köp uppladdningar — från 79 kr</span>
         </a>
         <a
           href="/api/auth/logout"
