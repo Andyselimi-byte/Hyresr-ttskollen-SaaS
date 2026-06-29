@@ -6,16 +6,32 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 export async function analyzeContract(contractText: string): Promise<ContractAnalysis> {
   const response = await client.messages.create({
     model: "claude-opus-4-8",
-    max_tokens: 4000,
-    system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster. Granska hyresavtal och returnera ENDAST giltig JSON, inget annat text. Max 8 klausuler. Håll finding och information korta (max 100 tecken vardera).
+    max_tokens: 6000,
+    system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster specialiserat på 12 kap. Jordabalken (JB).
+Granska hyresavtal NOGGRANT och returnera ENDAST giltig JSON utan annan text.
 
-Format:
-{"clauses":[{"title":"string","status":"ok|warn|flag","finding":"string","information":"string","lawRef":"string"}],"summary":"string"}
+Analysera och hitta:
+- Olagliga klausuler som strider mot 12 kap. JB (status: "flag")
+- Oskäliga eller tveksamma villkor (status: "warn")
+- Normala och godkända klausuler (status: "ok")
+- Saknade skydd som borde finnas
+- Ovanliga eller ensidiga villkor
 
-Regler: status "flag" = olaglig klausul, "warn" = tveksam, "ok" = normal.`,
+Format (max 15 klausuler):
+{"clauses":[{"title":"string","status":"ok|warn|flag","finding":"string (max 150 tecken)","information":"string (max 200 tecken)","lawRef":"string"}],"summary":"string (2-3 meningar om avtalet totalt)","riskLevel":"low|medium|high","recommendations":["string","string"]}
+
+Viktiga lagrum att kontrollera:
+- Besittningsskydd (46 §)
+- Hyreshöjning och bruksvärde (55 §)
+- Underhållsansvar (15 §)
+- Andrahandsuthyrning (40 §)
+- Störningar (25 §)
+- Hyresvärdens tillträde (26 §)
+- Depositionsregler
+- Uppsägningstider (4-5 §)`,
     messages: [{
       role: "user",
-      content: `Granska detta hyresavtal:\n\n${contractText.slice(0, 6000)}`,
+      content: `Granska detta hyresavtal grundligt och identifiera alla viktiga klausuler, problem och rättigheter:\n\n${contractText.slice(0, 14000)}`,
     }],
   });
 

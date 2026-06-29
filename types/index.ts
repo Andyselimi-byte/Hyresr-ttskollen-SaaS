@@ -35,6 +35,8 @@ export interface ContractClause {
 export interface ContractAnalysis {
   clauses: ContractClause[];
   summary: string;
+  riskLevel?: "low" | "medium" | "high";
+  recommendations?: string[];
 }
 
 export interface RightsTopicData {

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import { FileText, Upload, AlertCircle, CheckCircle, AlertTriangle, Loader2 } from "lucide-react";
+import { FileText, Upload, AlertCircle, CheckCircle, AlertTriangle, Loader2, ShieldAlert, ShieldCheck, Shield } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { PremiumGate } from "@/components/PremiumGate";
 import type { ContractAnalysis } from "@/types";
@@ -9,6 +9,12 @@ const STATUS_CONFIG = {
   ok:   { icon: CheckCircle,   cls: "bg-[#eaf3de] border-[#97c459] text-[#27500a]",  badge: "bg-[#97c459] text-white", label: "OK" },
   warn: { icon: AlertTriangle, cls: "bg-[#faeeda] border-[#ef9f27] text-[#633806]",  badge: "bg-[#ef9f27] text-white", label: "Notera" },
   flag: { icon: AlertCircle,   cls: "bg-[#fcebeb] border-[#f09595] text-[#791f1f]",  badge: "bg-[#f09595] text-white", label: "Uppmärksamma" },
+};
+
+const RISK_CONFIG = {
+  low:    { label: "Låg risk", cls: "bg-green-100 text-green-800 border-green-300", icon: ShieldCheck },
+  medium: { label: "Medelhög risk", cls: "bg-yellow-100 text-yellow-800 border-yellow-300", icon: Shield },
+  high:   { label: "Hög risk", cls: "bg-red-100 text-red-800 border-red-300", icon: ShieldAlert },
 };
 
 export default function AvtalPage() {
@@ -53,6 +59,8 @@ export default function AvtalPage() {
       }
     : null;
 
+  const riskCfg = analysis?.riskLevel ? RISK_CONFIG[analysis.riskLevel] : null;
+
   return (
     <div>
       <div className="mb-6">
@@ -62,7 +70,7 @@ export default function AvtalPage() {
           <span className="text-[10px] font-semibold bg-[#1a56a0] text-white px-2 py-0.5 rounded-full">PREMIUM</span>
         </div>
         <p className="text-sm text-gray-500">
-          Ladda upp ditt hyresavtal (PDF) för AI-driven analys av klausuler.
+          Ladda upp ditt hyresavtal (PDF) för djupgående AI-analys av alla klausuler och dina rättigheter.
         </p>
       </div>
       <PremiumGate featureName="Avtalsgranskning">
@@ -104,7 +112,7 @@ export default function AvtalPage() {
               disabled={loading}
               className="mt-4 w-full bg-[#1a56a0] hover:bg-[#0c447c] disabled:opacity-60 text-white font-semibold py-2.5 rounded-lg transition-colors text-sm flex items-center justify-center gap-2"
             >
-              {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Analyserar avtal...</> : "Analysera avtal"}
+              {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Analyserar avtal — detta tar ca 30 sekunder...</> : "Analysera avtal"}
             </button>
           )}
         </div>
@@ -112,16 +120,46 @@ export default function AvtalPage() {
 
       {analysis && grouped && (
         <div className="space-y-6">
+          {/* Summary card */}
           <div className="bg-white border border-gray-200 rounded-xl p-5">
-            <h2 className="font-semibold text-gray-900 mb-2">Sammanfattning</h2>
-            <p className="text-sm text-gray-700">{analysis.summary}</p>
-            <div className="flex gap-3 mt-3 text-xs font-medium">
+            <div className="flex items-start justify-between gap-4 mb-3">
+              <div>
+                <h2 className="font-semibold text-gray-900 mb-1">Sammanfattning</h2>
+                <p className="text-sm text-gray-700">{analysis.summary}</p>
+              </div>
+              {riskCfg && (
+                <div className={`shrink-0 flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg border ${riskCfg.cls}`}>
+                  <riskCfg.icon className="h-3.5 w-3.5" />
+                  {riskCfg.label}
+                </div>
+              )}
+            </div>
+            <div className="flex gap-3 text-xs font-medium">
               <span className="bg-[#eaf3de] text-[#27500a] px-2 py-1 rounded">{grouped.ok.length} OK</span>
               <span className="bg-[#faeeda] text-[#633806] px-2 py-1 rounded">{grouped.warn.length} Notera</span>
               <span className="bg-[#fcebeb] text-[#791f1f] px-2 py-1 rounded">{grouped.flag.length} Uppmärksamma</span>
             </div>
           </div>
 
+          {/* Recommendations */}
+          {analysis.recommendations && analysis.recommendations.length > 0 && (
+            <div className="bg-[#e6f1fb] border border-[#1a56a0]/20 rounded-xl p-5">
+              <h3 className="font-semibold text-[#1a56a0] mb-3 flex items-center gap-2">
+                <CheckCircle className="h-4 w-4" />
+                Rekommenderade åtgärder
+              </h3>
+              <ul className="space-y-2">
+                {analysis.recommendations.map((rec, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                    <span className="shrink-0 font-bold text-[#1a56a0] mt-0.5">{i + 1}.</span>
+                    {rec}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {/* Clauses */}
           {(["flag", "warn", "ok"] as const).map(status => {
             const clauses = grouped[status];
             if (clauses.length === 0) return null;

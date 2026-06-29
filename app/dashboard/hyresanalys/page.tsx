@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { BarChart2, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { BarChart2, TrendingUp, TrendingDown, Minus, ArrowRight, Info } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { CITIES } from "@/lib/rent-data";
 import type { RentResult } from "@/types";
@@ -37,9 +37,30 @@ export default function HyresanalysPage() {
   }
 
   const statusConfig = {
-    ok:     { cls: "status-ok",     icon: TrendingDown, label: "Rimlig hyra" },
-    warn:   { cls: "status-warn",   icon: Minus,        label: "Något över snittet" },
-    danger: { cls: "status-danger", icon: TrendingUp,   label: "Potentiellt för hög" },
+    ok:     { cls: "status-ok",     icon: TrendingDown, label: "Rimlig hyra",         color: "text-green-700" },
+    warn:   { cls: "status-warn",   icon: Minus,        label: "Något över snittet",  color: "text-yellow-700" },
+    danger: { cls: "status-danger", icon: TrendingUp,   label: "Potentiellt för hög", color: "text-red-700" },
+  };
+
+  const actionSteps = {
+    ok: [
+      "Din hyra ligger inom normalt intervall för din stad och bostadsstorlek.",
+      "Du har fortfarande rätt att begära prövning i Hyresnämnden om du anser att hyran är oskälig.",
+      "Dokumentera din lägenhetsskick och spara alla hyresavier.",
+    ],
+    warn: [
+      "Din hyra är något över referensvärdet — det kan vara värt att undersöka vidare.",
+      "Jämför med liknande lägenheter i ditt område via Hyresnämndens statistik.",
+      "Kontakta Hyresgästföreningen för kostnadsfri rådgivning.",
+      "Överväg att begära en motivering från din hyresvärd.",
+    ],
+    danger: [
+      "Din hyra avviker markant från bruksvärdet — du kan ha rätt att få den sänkt.",
+      "Ansök om hyresprövning hos Hyresnämnden — det är kostnadsfritt.",
+      "Samla in bevis: hyresavier, lägenhetsspecifikationer och jämförbara hyror i området.",
+      "Kontakta Hyresgästföreningen (hyresgastforeningen.se) för juridisk hjälp.",
+      "Använd brevgeneratorn för att skriva ett klagomålsbrev till din hyresvärd.",
+    ],
   };
 
   return (
@@ -50,7 +71,7 @@ export default function HyresanalysPage() {
           <h1 className="text-2xl font-bold text-gray-900">Hyresanalys</h1>
         </div>
         <p className="text-sm text-gray-500">
-          Jämför din hyra mot SCB:s referenshyror för din stad och bostadsstorlek.
+          Jämför din hyra mot referenshyror för din stad och få konkreta råd om nästa steg.
         </p>
       </div>
 
@@ -86,7 +107,7 @@ export default function HyresanalysPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Stad</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Stad / Kommun</label>
             <select
               value={form.city}
               onChange={e => setForm(f => ({ ...f, city: e.target.value }))}
@@ -129,43 +150,78 @@ export default function HyresanalysPage() {
       {result && (() => {
         const cfg = statusConfig[result.status];
         const Icon = cfg.icon;
+        const steps = actionSteps[result.status];
+        const overpayPerYear = result.difference > 0 ? result.difference * 12 : 0;
+
         return (
-          <div className={`rounded-xl p-6 ${cfg.cls}`}>
-            <div className="flex items-center gap-2 mb-4">
-              <Icon className="h-5 w-5" />
-              <h2 className="font-bold text-lg">{result.label}</h2>
-            </div>
-            <div className="grid grid-cols-3 gap-4 mb-4">
-              <div className="bg-white/60 rounded-lg p-3 text-center">
-                <p className="text-xs font-medium opacity-70 mb-1">Din hyra</p>
-                <p className="text-xl font-bold">{result.currentRent.toLocaleString("sv-SE")} kr</p>
+          <div className="space-y-4">
+            {/* Result card */}
+            <div className={`rounded-xl p-6 ${cfg.cls}`}>
+              <div className="flex items-center gap-2 mb-4">
+                <Icon className="h-5 w-5" />
+                <h2 className="font-bold text-lg">{result.label}</h2>
               </div>
-              <div className="bg-white/60 rounded-lg p-3 text-center">
-                <p className="text-xs font-medium opacity-70 mb-1">Referenshyra</p>
-                <p className="text-xl font-bold">{result.referenceRent.toLocaleString("sv-SE")} kr</p>
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="bg-white/60 rounded-lg p-3 text-center">
+                  <p className="text-xs font-medium opacity-70 mb-1">Din hyra</p>
+                  <p className="text-xl font-bold">{result.currentRent.toLocaleString("sv-SE")} kr</p>
+                </div>
+                <div className="bg-white/60 rounded-lg p-3 text-center">
+                  <p className="text-xs font-medium opacity-70 mb-1">Referenshyra</p>
+                  <p className="text-xl font-bold">{result.referenceRent.toLocaleString("sv-SE")} kr</p>
+                </div>
+                <div className="bg-white/60 rounded-lg p-3 text-center">
+                  <p className="text-xs font-medium opacity-70 mb-1">Skillnad</p>
+                  <p className="text-xl font-bold">
+                    {result.difference > 0 ? "+" : ""}{result.difference.toLocaleString("sv-SE")} kr
+                  </p>
+                  <p className="text-xs opacity-70">({result.differencePercent > 0 ? "+" : ""}{result.differencePercent}%)</p>
+                </div>
               </div>
-              <div className="bg-white/60 rounded-lg p-3 text-center">
-                <p className="text-xs font-medium opacity-70 mb-1">Skillnad</p>
-                <p className="text-xl font-bold">
-                  {result.difference > 0 ? "+" : ""}{result.difference.toLocaleString("sv-SE")} kr
-                </p>
-                <p className="text-xs opacity-70">({result.differencePercent > 0 ? "+" : ""}{result.differencePercent}%)</p>
-              </div>
+
+              {overpayPerYear > 0 && (
+                <div className="bg-white/70 rounded-lg px-4 py-3 mb-3 text-sm font-medium">
+                  Du betalar potentiellt <span className="font-bold">{overpayPerYear.toLocaleString("sv-SE")} kr för mycket per år</span>
+                </div>
+              )}
+
+              <p className="text-xs opacity-60">
+                Referenshyra baserad på {form.area} m², {form.rooms} rok i {form.city}. Källa: Hyresnämndens statistik 2024.
+              </p>
             </div>
 
-            {result.status === "danger" && (
-              <div className="text-sm">
-                <p className="font-medium mb-1">Vad kan du göra?</p>
-                <p className="opacity-80">
-                  Enligt 12 kap. 55 § JB kan hyran prövas av Hyresnämnden om den avviker
-                  från bruksvärdet. Du kan ansöka om prövning kostnadsfritt.
-                </p>
+            {/* Action steps */}
+            <div className="bg-white border border-gray-200 rounded-xl p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Info className="h-4 w-4 text-[#1a56a0]" />
+                <h3 className="font-semibold text-gray-900 text-sm">Vad du kan göra</h3>
               </div>
-            )}
+              <ul className="space-y-2">
+                {steps.map((step, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                    <ArrowRight className="h-4 w-4 text-[#1a56a0] shrink-0 mt-0.5" />
+                    {step}
+                  </li>
+                ))}
+              </ul>
+              {result.status === "danger" && (
+                <a
+                  href="/dashboard/brev"
+                  className="mt-4 inline-flex items-center gap-2 bg-[#1a56a0] text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-[#0c447c] transition-colors"
+                >
+                  Skriv klagomålsbrev <ArrowRight className="h-4 w-4" />
+                </a>
+              )}
+            </div>
 
-            <p className="text-xs opacity-60 mt-3">
-              Källa: SCB Hyresstatistik 2024. Referenshyra justerad för area ({form.area} m²).
-            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setResult(null)}
+                className="text-sm text-[#1a56a0] hover:underline"
+              >
+                ← Gör ny analys
+              </button>
+            </div>
           </div>
         );
       })()}
