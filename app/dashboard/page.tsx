@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import {
@@ -9,6 +9,19 @@ import {
 } from "lucide-react";
 import { ReviewModal } from "@/components/ReviewModal";
 import { PricingModal } from "@/components/PricingModal";
+
+function ReviewTrigger({ onCredits }: { onCredits: (n: number) => void }) {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  useEffect(() => {
+    const credits = searchParams.get("credits_added");
+    if (credits) {
+      onCredits(Number(credits));
+      router.replace("/dashboard");
+    }
+  }, [searchParams, router, onCredits]);
+  return null;
+}
 
 const MISSED_CLAUSES = [
   { title: "Olagliga renoveringsklausuler", desc: "Hyresvärdar skriver ofta in att du ska betala för normalt slitage. Det är olagligt — underhåll är hyresvärdens ansvar.", law: "12 kap. 15 § JB", danger: true },
@@ -56,16 +69,6 @@ export default function DashboardHomePage() {
   const [sending, setSending] = useState(false);
   const [reviewCredits, setReviewCredits] = useState<number | null>(null);
   const [pricingOpen, setPricingOpen] = useState(false);
-  const searchParams = useSearchParams();
-  const router = useRouter();
-
-  useEffect(() => {
-    const credits = searchParams.get("credits_added");
-    if (credits) {
-      setReviewCredits(Number(credits));
-      router.replace("/dashboard");
-    }
-  }, [searchParams, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -78,6 +81,9 @@ export default function DashboardHomePage() {
   return (
     <div className="min-h-screen bg-white">
 
+      <Suspense fallback={null}>
+        <ReviewTrigger onCredits={setReviewCredits} />
+      </Suspense>
       {reviewCredits !== null && (
         <ReviewModal credits={reviewCredits} onClose={() => setReviewCredits(null)} />
       )}
