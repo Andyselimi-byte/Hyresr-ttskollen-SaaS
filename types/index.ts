@@ -42,6 +42,7 @@ export interface RightsTopicData {
   title: string;
   tag: string;
   icon: string;
+  emoji: string;
   summary: string;
   content: string;
   lawRef: string;

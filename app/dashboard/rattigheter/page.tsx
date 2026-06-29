@@ -1,15 +1,8 @@
 "use client";
 import { useState } from "react";
-import {
-  BookOpen, Search, Home, Users, Wrench,
-  TrendingUp, DoorOpen, Heart, ChevronDown, ChevronUp,
-} from "lucide-react";
+import { BookOpen, Search, ChevronDown, ChevronUp } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { RIGHTS_TOPICS } from "@/lib/rights-data";
-
-const ICONS: Record<string, React.ElementType> = {
-  Home, Users, Wrench, TrendingUp, DoorOpen, Heart,
-};
 
 const TAG_COLORS: Record<string, string> = {
   "Grundläggande": "bg-blue-100 text-blue-700",
@@ -18,6 +11,17 @@ const TAG_COLORS: Record<string, string> = {
   "Aktuellt 2025": "bg-purple-100 text-purple-700",
   "Allvarligt":    "bg-red-100 text-red-700",
   "Familjerätt":   "bg-pink-100 text-pink-700",
+  "Hälsa":         "bg-teal-100 text-teal-700",
+  "Ekonomi":       "bg-yellow-100 text-yellow-700",
+  "Vanligt":       "bg-orange-100 text-orange-700",
+  "Praktiskt":     "bg-indigo-100 text-indigo-700",
+  "Regler":        "bg-gray-100 text-gray-700",
+  "Integritet":    "bg-violet-100 text-violet-700",
+  "Kollektiv":     "bg-cyan-100 text-cyan-700",
+  "Bostadsrätt":   "bg-sky-100 text-sky-700",
+  "Myndighet":     "bg-blue-100 text-blue-700",
+  "Avtal":         "bg-amber-100 text-amber-700",
+  "Rättigheter":   "bg-emerald-100 text-emerald-700",
 };
 
 export default function RattigheterPage() {
@@ -63,7 +67,6 @@ export default function RattigheterPage() {
 
       <div className="space-y-3">
         {filtered.map(topic => {
-          const Icon = ICONS[topic.icon] ?? Home;
           const isOpen = expanded === topic.id;
           const tagColor = TAG_COLORS[topic.tag] ?? "bg-gray-100 text-gray-600";
 
@@ -76,8 +79,8 @@ export default function RattigheterPage() {
                 onClick={() => setExpanded(isOpen ? null : topic.id)}
                 className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-gray-50 transition-colors"
               >
-                <div className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg bg-[#e6f1fb]">
-                  <Icon className="h-4.5 w-4.5 text-[#1a56a0]" />
+                <div className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#e6f1fb] text-xl">
+                  {topic.emoji}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
