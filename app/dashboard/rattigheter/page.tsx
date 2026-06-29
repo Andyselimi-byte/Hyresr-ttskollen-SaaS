@@ -1,8 +1,19 @@
 "use client";
 import { useState } from "react";
-import { BookOpen, Search, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  BookOpen, Search, Home, Users, Wrench, TrendingUp, TrendingDown,
+  DoorOpen, Heart, ChevronDown, ChevronUp, AlertTriangle, Volume2,
+  UserPlus, Wallet, Thermometer, Ban, Key, Scale, Building,
+  Landmark, FileX, HeartHandshake, Shield,
+} from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { RIGHTS_TOPICS } from "@/lib/rights-data";
+
+const ICONS: Record<string, React.ElementType> = {
+  Home, Users, Wrench, TrendingUp, TrendingDown, DoorOpen, Heart,
+  AlertTriangle, Volume2, UserPlus, Wallet, Thermometer, Ban, Key,
+  Scale, Building, Landmark, FileX, HeartHandshake, Shield,
+};
 
 const TAG_COLORS: Record<string, string> = {
   "Grundläggande": "bg-blue-100 text-blue-700",
@@ -67,6 +78,7 @@ export default function RattigheterPage() {
 
       <div className="space-y-3">
         {filtered.map(topic => {
+          const Icon = ICONS[topic.icon] ?? Home;
           const isOpen = expanded === topic.id;
           const tagColor = TAG_COLORS[topic.tag] ?? "bg-gray-100 text-gray-600";
 
@@ -79,8 +91,8 @@ export default function RattigheterPage() {
                 onClick={() => setExpanded(isOpen ? null : topic.id)}
                 className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-gray-50 transition-colors"
               >
-                <div className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#e6f1fb] text-xl">
-                  {topic.emoji}
+                <div className="shrink-0 inline-flex items-center justify-center w-9 h-9 rounded-lg bg-[#e6f1fb]">
+                  <Icon className="h-4 w-4 text-[#1a56a0]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
