@@ -1,11 +1,14 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Shield, BarChart2, BookOpen, FileText, Mail, Check,
   AlertTriangle, ArrowRight, Star, ChevronRight,
   ChevronDown, ChevronUp, Clock, MessageSquare, CheckCircle, HelpCircle, LogOut,
 } from "lucide-react";
+import { ReviewModal } from "@/components/ReviewModal";
+import { PricingModal } from "@/components/PricingModal";
 
 const MISSED_CLAUSES = [
   { title: "Olagliga renoveringsklausuler", desc: "Hyresvärdar skriver ofta in att du ska betala för normalt slitage. Det är olagligt — underhåll är hyresvärdens ansvar.", law: "12 kap. 15 § JB", danger: true },
@@ -51,6 +54,18 @@ export default function DashboardHomePage() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [reviewCredits, setReviewCredits] = useState<number | null>(null);
+  const [pricingOpen, setPricingOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const credits = searchParams.get("credits_added");
+    if (credits) {
+      setReviewCredits(Number(credits));
+      router.replace("/dashboard");
+    }
+  }, [searchParams, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -63,22 +78,27 @@ export default function DashboardHomePage() {
   return (
     <div className="min-h-screen bg-white">
 
+      {reviewCredits !== null && (
+        <ReviewModal credits={reviewCredits} onClose={() => setReviewCredits(null)} />
+      )}
+      {pricingOpen && <PricingModal onClose={() => setPricingOpen(false)} />}
+
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Shield className="h-6 w-6 text-[#1a56a0]" />
             <span className="font-bold text-[#1a56a0] text-lg">Hyresrättskollen</span>
-          </div>
+          </Link>
           <div className="hidden sm:flex items-center gap-6 text-sm text-gray-600 font-medium">
             <a href="#verktyg"   className="hover:text-gray-900 transition-colors">Verktyg</a>
             <a href="#faq"       className="hover:text-gray-900 transition-colors">FAQ</a>
             <a href="#kontakt"   className="hover:text-gray-900 transition-colors">Kontakt</a>
           </div>
           <div className="flex items-center gap-3">
-            <a href="/api/stripe/checkout?pkg=10" className="hidden sm:flex items-center gap-1.5 text-sm bg-[#1a56a0] hover:bg-[#0c447c] text-white font-semibold px-4 py-2 rounded-lg transition-colors">
+            <button onClick={() => setPricingOpen(true)} className="hidden sm:flex items-center gap-1.5 text-sm bg-[#1a56a0] hover:bg-[#0c447c] text-white font-semibold px-4 py-2 rounded-lg transition-colors">
               Köp uppladdningar
-            </a>
+            </button>
             <a href="/api/auth/logout" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors">
               <LogOut className="h-4 w-4" /> Logga ut
             </a>

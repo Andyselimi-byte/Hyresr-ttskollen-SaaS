@@ -6,6 +6,7 @@ import {
   Home, BarChart2, BookOpen, FileText, Mail,
   LogOut, Menu, X, Crown, Shield,
 } from "lucide-react";
+import { PricingModal } from "@/components/PricingModal";
 
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Hem", icon: Home },
@@ -15,18 +16,18 @@ const NAV_ITEMS = [
   { href: "/dashboard/brev", label: "Brevgenerator", icon: Mail },
 ];
 
-function Sidebar({ onClose }: { onClose?: () => void }) {
+function Sidebar({ onClose, onBuy }: { onClose?: () => void; onBuy: () => void }) {
   const pathname = usePathname();
 
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
       <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-        <div className="flex items-center gap-2">
+        <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Shield className="h-6 w-6 text-[#1a56a0]" />
           <span className="font-bold text-[#1a56a0] text-lg leading-tight">
             Hyresrätts<br />kollen
           </span>
-        </div>
+        </Link>
         {onClose && (
           <button onClick={onClose} className="lg:hidden text-gray-400 hover:text-gray-600">
             <X className="h-5 w-5" />
@@ -56,13 +57,13 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
       </nav>
 
       <div className="px-3 pb-4 space-y-2 border-t border-gray-100 pt-3">
-        <a
-          href="/api/stripe/checkout?pkg=10"
-          className="flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#1a56a0] to-[#0c447c] text-white text-xs hover:opacity-90 transition-opacity"
+        <button
+          onClick={onBuy}
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg bg-gradient-to-r from-[#1a56a0] to-[#0c447c] text-white text-xs hover:opacity-90 transition-opacity"
         >
           <Crown className="h-3.5 w-3.5 shrink-0" />
           <span className="font-medium">Köp uppladdningar — från 79 kr</span>
-        </a>
+        </button>
         <a
           href="/api/auth/logout"
           className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-700"
@@ -77,12 +78,15 @@ function Sidebar({ onClose }: { onClose?: () => void }) {
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
+      {pricingOpen && <PricingModal onClose={() => setPricingOpen(false)} />}
+
       {/* Desktop sidebar */}
       <div className="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col">
-        <Sidebar />
+        <Sidebar onBuy={() => setPricingOpen(true)} />
       </div>
 
       {/* Mobile sidebar overlay */}
@@ -90,7 +94,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="fixed inset-0 z-40 lg:hidden">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileOpen(false)} />
           <div className="absolute left-0 top-0 bottom-0 w-64 z-50">
-            <Sidebar onClose={() => setMobileOpen(false)} />
+            <Sidebar onClose={() => setMobileOpen(false)} onBuy={() => { setMobileOpen(false); setPricingOpen(true); }} />
           </div>
         </div>
       )}
@@ -99,16 +103,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         {/* Mobile topbar */}
         <div className="lg:hidden flex items-center gap-3 px-4 py-3 bg-white border-b border-gray-200 sticky top-0 z-30">
-          <button
-            onClick={() => setMobileOpen(true)}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <button onClick={() => setMobileOpen(true)} className="text-gray-500 hover:text-gray-700">
             <Menu className="h-5 w-5" />
           </button>
-          <div className="flex items-center gap-1.5">
+          <Link href="/dashboard" className="flex items-center gap-1.5 hover:opacity-80 transition-opacity">
             <Shield className="h-5 w-5 text-[#1a56a0]" />
             <span className="font-bold text-[#1a56a0] text-base">Hyresrättskollen</span>
-          </div>
+          </Link>
         </div>
 
         <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8 max-w-4xl mx-auto w-full">
