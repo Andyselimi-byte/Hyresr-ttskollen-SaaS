@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import {
   Shield, BarChart2, BookOpen, FileText, Mail, Check,
   AlertTriangle, ArrowRight, ChevronRight,
-  ChevronDown, ChevronUp, MessageSquare, CheckCircle, HelpCircle, LogOut,
+  ChevronDown, ChevronUp, MessageSquare, CheckCircle, HelpCircle, LogOut, User,
 } from "lucide-react";
 import { ReviewModal } from "@/components/ReviewModal";
 import { PricingModal } from "@/components/PricingModal";
@@ -110,7 +110,7 @@ export default function DashboardHomePage() {
       {/* ── Nav ── */}
       <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <Shield className="h-6 w-6 text-[#1a56a0]" />
             <span className="font-bold text-[#1a56a0] text-lg">Hyresrättskollen</span>
           </Link>
@@ -123,6 +123,9 @@ export default function DashboardHomePage() {
             <button onClick={() => setPricingOpen(true)} className="hidden sm:flex items-center gap-1.5 text-sm bg-[#1a56a0] hover:bg-[#0c447c] text-white font-semibold px-4 py-2 rounded-lg transition-colors">
               Köp uppladdningar
             </button>
+            <Link href="/dashboard/profil" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors">
+              <User className="h-4 w-4" /> Min profil
+            </Link>
             <a href="/api/auth/logout" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors">
               <LogOut className="h-4 w-4" /> Logga ut
             </a>
