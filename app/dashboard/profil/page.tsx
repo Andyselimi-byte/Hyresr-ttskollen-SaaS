@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
-import { User, Mail, CreditCard, Trash2, AlertTriangle, CheckCircle } from "lucide-react";
+import { User, Mail, CreditCard, Trash2, AlertTriangle, CheckCircle, LogOut } from "lucide-react";
 
 export default function ProfilPage() {
   const router = useRouter();
@@ -83,6 +83,14 @@ export default function ProfilPage() {
             <p className="text-gray-700">{credits} uppladdningar</p>
           </div>
         </div>
+      </div>
+
+      {/* Logga ut */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+        <h2 className="font-semibold text-gray-900 text-sm mb-3">Session</h2>
+        <a href="/api/auth/logout" className="inline-flex items-center gap-2 text-sm text-gray-600 border border-gray-300 hover:bg-gray-50 font-medium px-4 py-2 rounded-lg transition-colors">
+          <LogOut className="h-4 w-4" /> Logga ut
+        </a>
       </div>
 
       {/* Radera konto */}
