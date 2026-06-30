@@ -126,7 +126,7 @@ export default function DashboardHomePage() {
             <Link href="/dashboard/profil" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors">
               <User className="h-4 w-4" /> Min profil
             </Link>
-            <a href="/api/auth/logout" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors">
+            <a href="/api/auth/logout" className="flex items-center gap-1.5 text-sm border border-gray-300 hover:bg-gray-50 text-gray-600 font-medium px-3 py-1.5 rounded-lg transition-colors">
               <LogOut className="h-4 w-4" /> Logga ut
             </a>
           </div>
