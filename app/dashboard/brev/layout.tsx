@@ -23,7 +23,7 @@ function Sidebar({ onClose, onBuy }: { onClose?: () => void; onBuy: () => void }
   return (
     <div className="flex flex-col h-full bg-white border-r border-gray-200">
       <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-        <Link href="/" onClick={onClose} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+        <Link href="/dashboard" onClick={onClose} className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <Shield className="h-6 w-6 text-[#1a56a0]" />
           <span className="font-bold text-[#1a56a0] text-lg leading-tight">
             Hyresrätts<br />kollen
