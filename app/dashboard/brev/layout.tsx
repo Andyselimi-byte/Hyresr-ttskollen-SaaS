@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  Home, BarChart2, BookOpen, FileText, Mail,
+  Home, BarChart2, BookOpen, FileText, Mail, User,
   LogOut, Menu, X, Crown, Shield,
 } from "lucide-react";
 import { PricingModal } from "@/components/PricingModal";
@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/dashboard/rattigheter", label: "Rättigheter", icon: BookOpen },
   { href: "/dashboard/avtal", label: "Avtalsgranskning", icon: FileText },
   { href: "/dashboard/brev", label: "Brevgenerator", icon: Mail },
+  { href: "/dashboard/profil", label: "Min profil", icon: User },
 ];
 
 function Sidebar({ onClose, onBuy }: { onClose?: () => void; onBuy: () => void }) {

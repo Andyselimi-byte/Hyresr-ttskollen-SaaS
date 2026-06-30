@@ -405,25 +405,31 @@ const ROK_FACTOR: Record<number, number> = {
   4: 0.88,  // 4+ rok — lägst kr/m²
 };
 
+// Typisk area per rok-antal — används för area-justering
+const TYPICAL_AREA: Record<number, number> = {
+  1: 35,  // 1 rok ≈ 35 m²
+  2: 55,  // 2 rok ≈ 55 m²
+  3: 75,  // 3 rok ≈ 75 m²
+  4: 100, // 4+ rok ≈ 100 m²
+};
+
 export function analyzeRent(input: RentInput): RentResult {
-  const baseKvmRate = KVM_RATE[input.city] ?? KVM_RATE["Annan stad"];
   const rooms = Math.min(Math.max(input.rooms, 1), 4);
-  const rokFactor = ROK_FACTOR[rooms];
+  const typicalArea = TYPICAL_AREA[rooms];
 
-  // Skala kr/m² med rok-faktor + area-effekt (mycket stor/liten area justeras)
-  // Lägenheter under 30 m² eller över 100 m² avviker mer från standardsnittet
-  let areaFactor = 1.0;
-  if (input.area < 30) areaFactor = 1.12;
-  else if (input.area < 40) areaFactor = 1.06;
-  else if (input.area > 90) areaFactor = 0.96;
-  else if (input.area > 120) areaFactor = 0.92;
+  // Hämta basreferens från REFERENCE_RENTS (kr/mån för typisk area)
+  const baseRef = REFERENCE_RENTS[input.city]?.[rooms]
+    ?? REFERENCE_RENTS["Annan stad"][rooms];
 
-  const kvmRate = Math.round(baseKvmRate * rokFactor * areaFactor);
-  const referenceRent = Math.round(kvmRate * input.area);
+  // Justera för area-avvikelse med dämpad skalning (^0.65 istf linjär)
+  // Exempel: 30m² 2rok → baseRef × (30/55)^0.65 ≈ baseRef × 0.67
+  const areaRatio = input.area / typicalArea;
+  const scaledRef = baseRef * Math.pow(areaRatio, 0.65);
+  const referenceRent = Math.round(scaledRef);
+
   const difference = input.currentRent - referenceRent;
   const differencePercent = Math.round((difference / referenceRent) * 100);
 
-  // Hyresnämnden tillåter normalt +/- ~5% avvikelse från bruksvärdet
   let status: RentResult["status"];
   let label: string;
 
@@ -439,6 +445,7 @@ export function analyzeRent(input: RentInput): RentResult {
   }
 
   const currentKvmRate = Math.round(input.currentRent / input.area);
+  const kvmRate = Math.round(referenceRent / input.area);
   const referenceMin = Math.round(referenceRent * 0.90);
   const referenceMax = Math.round(referenceRent * 1.10);
 
