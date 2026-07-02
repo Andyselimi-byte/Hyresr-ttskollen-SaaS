@@ -97,7 +97,7 @@ export default function DashboardHomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen" style={{ background: "#0f172a" }}>
 
       <Suspense fallback={null}>
         <ReviewTrigger onCredits={setReviewCredits} />
@@ -108,289 +108,311 @@ export default function DashboardHomePage() {
       {pricingOpen && <PricingModal onClose={() => setPricingOpen(false)} />}
 
       {/* ── Nav ── */}
-      <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-100 px-6 py-4">
+      <nav className="sticky top-0 z-40 border-b border-slate-800 px-6 py-4" style={{ background: "#0f172a" }}>
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-            <Shield className="h-6 w-6 text-[#1a56a0]" />
-            <span className="font-bold text-[#1a56a0] text-lg">Hyresrättskollen</span>
+          <Link href="/dashboard" className="flex items-center gap-2.5 hover:opacity-80 transition-opacity">
+            <Shield className="h-5 w-5 text-[#60a5fa]" />
+            <span className="font-semibold text-white text-base tracking-tight">Hyresrättskollen</span>
           </Link>
-          <div className="hidden sm:flex items-center gap-6 text-sm text-gray-600 font-medium">
-            <a href="#verktyg"   className="hover:text-gray-900 transition-colors">Verktyg</a>
-            <a href="#faq"       className="hover:text-gray-900 transition-colors">FAQ</a>
-            <a href="#kontakt"   className="hover:text-gray-900 transition-colors">Kontakt</a>
+          <div className="hidden sm:flex items-center gap-8 text-sm text-slate-400">
+            <a href="#verktyg" className="hover:text-white transition-colors">Verktyg</a>
+            <a href="#faq"     className="hover:text-white transition-colors">FAQ</a>
+            <a href="#kontakt" className="hover:text-white transition-colors">Kontakt</a>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => setPricingOpen(true)} className="hidden sm:flex items-center gap-1.5 text-sm bg-[#1a56a0] hover:bg-[#0c447c] text-white font-semibold px-4 py-2 rounded-lg transition-colors">
+            <button onClick={() => setPricingOpen(true)}
+              className="hidden sm:flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-md transition-colors"
+              style={{ background: "#1a56a0", color: "#fff" }}>
               Köp uppladdningar
             </button>
-            <Link href="/dashboard/profil" className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 font-medium transition-colors">
+            <Link href="/dashboard/profil"
+              className="flex items-center gap-1.5 text-sm font-medium transition-colors"
+              style={{ color: "#94a3b8" }}>
               <User className="h-4 w-4" /> Min profil
             </Link>
-            <a href="/api/auth/logout" className="hidden flex items-center gap-1.5 text-sm border border-gray-300 hover:bg-gray-50 text-gray-600 font-medium px-3 py-1.5 rounded-lg transition-colors">
-              <LogOut className="h-4 w-4" /> Logga ut
-            </a>
           </div>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section className="bg-gradient-to-b from-[#f0f6ff] to-white px-6 pt-20 pb-24">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-[#e6f1fb] text-[#1a56a0] text-xs font-semibold px-3 py-1.5 rounded-full mb-6">
-            <Shield className="h-3.5 w-3.5" />
+      <section className="px-6 pt-20 pb-24" style={{ background: "#0f172a" }}>
+        <div className="max-w-6xl mx-auto">
+          <p className="text-xs font-semibold tracking-widest uppercase mb-8" style={{ color: "#1a56a0" }}>
             Verktyg för 1,6 miljoner svenska hyresgäster
-          </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-5 leading-tight tracking-tight">
-            Visste du att <span className="text-[#1a56a0]">1 av 3</span><br />
-            hyresavtal är olagliga?
-          </h1>
-          <p className="text-lg sm:text-xl text-gray-500 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Välj ett verktyg nedan för att analysera din hyra, granska ditt avtal eller skriva ett juridiskt brev — allt baserat på 12 kap. Jordabalken.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-            <a href="#verktyg" className="bg-[#1a56a0] hover:bg-[#0c447c] text-white font-bold px-8 py-3.5 rounded-xl transition-colors text-base flex items-center justify-center gap-2">
-              Se mina verktyg <ArrowRight className="h-4 w-4" />
-            </a>
-            <a href="#faq" className="border border-gray-300 hover:border-[#1a56a0] text-gray-700 font-semibold px-8 py-3.5 rounded-xl transition-colors text-base">
-              Vanliga frågor
-            </a>
-          </div>
-          <div className="flex flex-wrap justify-center gap-5 text-sm text-gray-400">
-            {["Gratis att komma igång", "Baserat på Jordabalken", "Inte juridisk rådgivning"].map(t => (
-              <span key={t} className="flex items-center gap-1.5"><Check className="h-4 w-4 text-green-500" />{t}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Stats ── */}
-      <section className="bg-[#1a56a0] px-6 py-14">
-        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-8 text-center text-white">
-          {STATS.map(s => (
-            <div key={s.num}>
-              <p className="text-4xl font-bold mb-2">{s.num}</p>
-              <p className="text-sm opacity-75 leading-relaxed">{s.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ── Vanliga fällor ── */}
-      <section className="px-6 py-20 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-red-50 text-red-700 text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-              <AlertTriangle className="h-3.5 w-3.5" />
-              Vanliga fällor i hyresavtal
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Det här missar de flesta i sitt hyresavtal</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">De flesta skriver under utan att veta att dessa klausuler antingen är olagliga eller kan bestridas.</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {MISSED_CLAUSES.map(c => (
-              <div key={c.title} className={`rounded-2xl p-5 border ${c.danger ? "bg-red-50 border-red-200" : "bg-gray-50 border-gray-200"}`}>
-                <div className="flex items-start gap-2 mb-2">
-                  <AlertTriangle className={`h-4 w-4 mt-0.5 shrink-0 ${c.danger ? "text-red-500" : "text-yellow-500"}`} />
-                  <p className="font-semibold text-gray-900 text-sm">{c.title}</p>
-                </div>
-                <p className="text-xs text-gray-600 mb-3 leading-relaxed">{c.desc}</p>
-                <span className="text-[10px] font-mono bg-white/80 border border-gray-200 text-gray-500 px-2 py-0.5 rounded-full">{c.law}</span>
+          <div className="grid lg:grid-cols-2 gap-16 items-end">
+            <div>
+              <h1 className="text-5xl sm:text-6xl font-bold leading-none tracking-tight mb-6" style={{ color: "#fff" }}>
+                Visste du att{" "}
+                <span style={{ color: "#60a5fa" }}>1&nbsp;av&nbsp;3</span>
+                <br />hyresavtal
+                <br />är olagliga?
+              </h1>
+              <div className="w-10 h-0.5 mb-6" style={{ background: "#1a56a0" }} />
+              <p className="text-base leading-relaxed mb-8 max-w-md" style={{ color: "#94a3b8" }}>
+                Välj ett verktyg nedan för att analysera din hyra, granska ditt avtal eller
+                skriva ett juridiskt brev — allt baserat på 12 kap. Jordabalken.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a href="#verktyg"
+                  className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-md text-sm transition-colors"
+                  style={{ background: "#1a56a0", color: "#fff" }}>
+                  Se mina verktyg <ArrowRight className="h-4 w-4" />
+                </a>
+                <a href="#faq"
+                  className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-md text-sm"
+                  style={{ border: "1px solid #334155", color: "#94a3b8" }}>
+                  Vanliga frågor
+                </a>
               </div>
-            ))}
+            </div>
+            <div className="divide-y" style={{ borderColor: "#1e293b" }}>
+              {STATS.map((s, i) => (
+                <div key={s.num} className="flex items-baseline gap-6 py-5">
+                  <span className="text-3xl font-bold tracking-tight tabular-nums shrink-0"
+                    style={{ color: i === 0 ? "#60a5fa" : "#e2e8f0", minWidth: 90 }}>{s.num}</span>
+                  <span className="text-sm" style={{ color: "#64748b" }}>{s.desc}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="text-center mt-10">
-            <Link href="/dashboard/avtal" className="inline-flex items-center gap-2 bg-[#1a56a0] hover:bg-[#0c447c] text-white font-bold px-7 py-3.5 rounded-xl transition-colors">
-              Kontrollera mitt avtal nu <ChevronRight className="h-4 w-4" />
-            </Link>
+          <div className="flex flex-wrap gap-6 mt-12 pt-8" style={{ borderTop: "1px solid #1e293b" }}>
+            {["Gratis att komma igång", "Baserat på Jordabalken", "Inte juridisk rådgivning"].map(t => (
+              <span key={t} className="flex items-center gap-2 text-xs" style={{ color: "#475569" }}>
+                <span className="w-1 h-1 rounded-full inline-block" style={{ background: "#1a56a0" }} />{t}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ── Verktyg ── */}
-      <section id="verktyg" className="px-6 py-20 bg-[#f8faff]">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Dina verktyg</h2>
-            <p className="text-gray-500">Allt du behöver som hyresgäst — samlat på ett ställe.</p>
+      <div style={{ background: "#fff" }}>
+
+        {/* ── Vanliga fällor ── */}
+        <section className="px-6 py-20">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6" style={{ borderBottom: "1px solid #e5e7eb" }}>
+              <div>
+                <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#1a56a0" }}>Vanliga fällor</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Det här missar de flesta i sitt avtal</h2>
+              </div>
+              <p className="text-sm text-gray-400 max-w-xs sm:text-right hidden sm:block">De flesta skriver under utan att veta att dessa klausuler är olagliga eller kan bestridas.</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3" style={{ gap: "1px", background: "#e5e7eb" }}>
+              {MISSED_CLAUSES.map((c, i) => (
+                <div key={c.title} className="bg-white p-6">
+                  <div className="flex items-start justify-between mb-3">
+                    <span className="text-xs font-mono text-gray-300">{String(i + 1).padStart(2, "0")}</span>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${c.danger ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-700"}`}>
+                      {c.danger ? "OLAGLIGT" : "TVEKSAMT"}
+                    </span>
+                  </div>
+                  <p className="font-semibold text-gray-900 text-sm mb-2">{c.title}</p>
+                  <p className="text-xs text-gray-500 leading-relaxed mb-4">{c.desc}</p>
+                  <span className="text-[10px] font-mono" style={{ color: "#1a56a0" }}>{c.law}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8">
+              <Link href="/dashboard/avtal"
+                className="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-md text-sm text-white"
+                style={{ background: "#1a56a0" }}>
+                Kontrollera mitt avtal <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
-          <div className="grid sm:grid-cols-2 gap-5">
-            {FEATURES.map(f => {
-              const Icon = f.icon;
-              return (
-                <Link key={f.href} href={f.href} className="group bg-white border border-gray-200 rounded-2xl p-6 hover:border-[#1a56a0] hover:shadow-lg transition-all">
-                  <div className="flex items-start gap-4">
-                    <div className="shrink-0 inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[#e6f1fb] group-hover:bg-[#1a56a0] transition-colors">
-                      <Icon className="h-6 w-6 text-[#1a56a0] group-hover:text-white transition-colors" />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <p className="font-bold text-gray-900">{f.title}</p>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${f.free ? "bg-green-100 text-green-700" : "bg-[#e6f1fb] text-[#1a56a0]"}`}>
-                          {f.free ? "GRATIS" : "PREMIUM"}
-                        </span>
+        </section>
+
+        {/* ── Verktyg ── */}
+        <section id="verktyg" className="px-6 py-20" style={{ background: "#f8faff", borderTop: "1px solid #e5e7eb" }}>
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pb-6" style={{ borderBottom: "1px solid #e5e7eb" }}>
+              <div>
+                <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#1a56a0" }}>Verktyg</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Dina verktyg</h2>
+              </div>
+              <p className="text-sm text-gray-400 max-w-xs sm:text-right hidden sm:block">Allt du behöver som hyresgäst — samlat på ett ställe.</p>
+            </div>
+            <div className="grid sm:grid-cols-2" style={{ gap: "1px", background: "#e5e7eb" }}>
+              {FEATURES.map(f => {
+                const Icon = f.icon;
+                return (
+                  <Link key={f.href} href={f.href} className="group bg-white p-8 flex flex-col gap-4 transition-colors hover:bg-[#f0f6ff]">
+                    <div className="flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-md flex items-center justify-center transition-colors group-hover:bg-[#1a56a0]" style={{ background: "#e6f1fb" }}>
+                        <Icon className="h-5 w-5 group-hover:text-white transition-colors" style={{ color: "#1a56a0" }} />
                       </div>
+                      <span className={`text-[10px] font-bold px-2.5 py-1 rounded ${f.free ? "bg-green-50 text-green-700" : "bg-[#e6f1fb] text-[#1a56a0]"}`}>
+                        {f.free ? "GRATIS" : "CREDITS"}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900 mb-1.5">{f.title}</p>
                       <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
                     </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── FAQ ── */}
-      <section id="faq" className="px-6 py-20 bg-[#f8faff]">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Vanliga frågor</h2>
-            <p className="text-gray-500">Allt du undrar om tjänsten — samlat på ett ställe.</p>
-          </div>
-          <div className="space-y-3">
-            {FAQS.map((faq, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                <button
-                  className="w-full flex items-center justify-between px-5 py-4 text-left font-medium text-gray-900 hover:bg-gray-50 transition-colors"
-                  onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                >
-                  <span className="pr-4">{faq.q}</span>
-                  {openFaq === i
-                    ? <ChevronUp className="h-4 w-4 text-[#1a56a0] shrink-0" />
-                    : <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />}
-                </button>
-                {openFaq === i && (
-                  <div className="px-5 pb-5 pt-4 text-sm text-gray-600 leading-relaxed border-t border-gray-100">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Kontakt ── */}
-      <section id="kontakt" className="px-6 py-20 bg-white">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">Kontakta oss</h2>
-            <p className="text-gray-500">Har du frågor om din hyra, dina rättigheter eller tjänsten?</p>
-          </div>
-          <div className="grid lg:grid-cols-2 gap-10 items-start">
-            <div className="space-y-4">
-              {[
-                { icon: Mail,          title: "E-post",      desc: "support@hyresrattskollen.se", sub: "Vi svarar så snart vi kan" },
-                { icon: MessageSquare, title: "Snabba svar", desc: "Kolla FAQ-sektionen ovan",    sub: "Många svar finns redan där" },
-              ].map(item => {
-                const Icon = item.icon;
-                return (
-                  <div key={item.title} className="flex items-start gap-4 bg-gray-50 border border-gray-200 rounded-2xl p-5">
-                    <div className="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-xl bg-[#e6f1fb]">
-                      <Icon className="h-5 w-5 text-[#1a56a0]" />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 text-sm">{item.title}</p>
-                      <p className="text-sm text-[#1a56a0] font-medium">{item.desc}</p>
-                      <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>
-                    </div>
-                  </div>
+                    <span className="text-xs font-semibold flex items-center gap-1 mt-auto" style={{ color: "#1a56a0" }}>
+                      Kom igång <ArrowRight className="h-3 w-3" />
+                    </span>
+                  </Link>
                 );
               })}
-              <div className="bg-[#f0f6ff] border border-[#1a56a0]/20 rounded-2xl p-5">
-                <div className="flex items-start gap-3">
-                  <HelpCircle className="h-5 w-5 text-[#1a56a0] shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-gray-900 text-sm mb-1">Behöver du juridisk hjälp?</p>
-                    <p className="text-xs text-gray-600 leading-relaxed">
-                      Vi ger inte juridisk rådgivning. Kontakta <strong>Hyresnämnden</strong> (kostnadsfritt) eller <strong>Hyresgästföreningen</strong> för rättshjälp.
-                    </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section id="faq" className="px-6 py-20 bg-white" style={{ borderTop: "1px solid #e5e7eb" }}>
+          <div className="max-w-6xl mx-auto">
+            <div className="pb-6 mb-2" style={{ borderBottom: "1px solid #e5e7eb" }}>
+              <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#1a56a0" }}>Frågor & svar</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Vanliga frågor</h2>
+            </div>
+            <div style={{ borderBottom: "1px solid #e5e7eb" }}>
+              {FAQS.map((faq, i) => (
+                <div key={i} style={{ borderTop: "1px solid #e5e7eb" }}>
+                  <button className="w-full flex items-center justify-between py-5 text-left" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                    <span className="font-medium text-gray-900 pr-6 text-sm sm:text-base">{faq.q}</span>
+                    {openFaq === i
+                      ? <ChevronUp className="h-4 w-4 shrink-0" style={{ color: "#1a56a0" }} />
+                      : <ChevronDown className="h-4 w-4 text-gray-400 shrink-0" />}
+                  </button>
+                  {openFaq === i && <div className="pb-5 text-sm text-gray-500 leading-relaxed max-w-3xl">{faq.a}</div>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ── Kontakt ── */}
+        <section id="kontakt" className="px-6 py-20" style={{ background: "#f8faff", borderTop: "1px solid #e5e7eb" }}>
+          <div className="max-w-6xl mx-auto">
+            <div className="pb-6 mb-10" style={{ borderBottom: "1px solid #e5e7eb" }}>
+              <p className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: "#1a56a0" }}>Kontakt</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">Kontakta oss</h2>
+            </div>
+            <div className="grid lg:grid-cols-2 gap-12 items-start">
+              <div className="space-y-4">
+                {[
+                  { icon: Mail,          title: "E-post",      desc: "support@hyresrattskollen.se", sub: "Vi svarar så snart vi kan" },
+                  { icon: MessageSquare, title: "Snabba svar", desc: "Kolla FAQ-sektionen ovan",    sub: "Många svar finns redan där" },
+                ].map(item => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={item.title} className="flex items-start gap-4 bg-white border border-gray-200 p-5 rounded-md">
+                      <div className="w-9 h-9 rounded-md flex items-center justify-center shrink-0" style={{ background: "#e6f1fb" }}>
+                        <Icon className="h-4 w-4" style={{ color: "#1a56a0" }} />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 text-sm">{item.title}</p>
+                        <p className="text-sm font-medium" style={{ color: "#1a56a0" }}>{item.desc}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{item.sub}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+                <div className="bg-white border border-gray-200 p-5 rounded-md">
+                  <div className="flex items-start gap-3">
+                    <HelpCircle className="h-5 w-5 shrink-0 mt-0.5" style={{ color: "#1a56a0" }} />
+                    <div>
+                      <p className="font-semibold text-gray-900 text-sm mb-1">Behöver du juridisk hjälp?</p>
+                      <p className="text-xs text-gray-500 leading-relaxed">
+                        Vi ger inte juridisk rådgivning. Kontakta <strong>Hyresnämnden</strong> (kostnadsfritt) eller <strong>Hyresgästföreningen</strong> för rättshjälp.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-white border border-gray-200 rounded-2xl p-7 shadow-sm">
-              {sent ? (
-                <div className="flex flex-col items-center justify-center text-center py-10">
-                  <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-4">
-                    <CheckCircle className="h-7 w-7 text-green-600" />
-                  </div>
-                  <h3 className="font-bold text-gray-900 text-lg mb-2">Meddelande skickat!</h3>
-                  <p className="text-sm text-gray-500 mb-6">Vi återkommer inom 1–2 arbetsdagar.</p>
-                  <button onClick={() => { setSent(false); setForm({ name: "", email: "", subject: "", message: "" }); }} className="text-sm text-[#1a56a0] hover:underline">
-                    Skicka ett nytt meddelande
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <h3 className="font-bold text-gray-900 text-lg mb-5">Skicka ett meddelande</h3>
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Namn</label>
-                        <input required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Anna Andersson"
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0]" />
-                      </div>
-                      <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">E-post</label>
-                        <input required type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="anna@example.com"
-                          className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0]" />
-                      </div>
+              <div className="bg-white border border-gray-200 rounded-md p-7">
+                {sent ? (
+                  <div className="flex flex-col items-center justify-center text-center py-10">
+                    <div className="w-12 h-12 rounded-full bg-green-50 flex items-center justify-center mb-4">
+                      <CheckCircle className="h-6 w-6 text-green-600" />
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Ämne</label>
-                      <select required value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0] bg-white">
-                        <option value="">Välj ett ämne...</option>
-                        <option>Fråga om hyresanalys</option>
-                        <option>Fråga om avtalsgranskning</option>
-                        <option>Problem med betalning</option>
-                        <option>Tekniskt problem</option>
-                        <option>Annan fråga</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Meddelande</label>
-                      <textarea required rows={4} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} placeholder="Beskriv din fråga..."
-                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0] resize-none" />
-                    </div>
-                    <button type="submit" disabled={sending}
-                      className="w-full bg-[#1a56a0] hover:bg-[#0c447c] disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
-                      {sending ? "Skickar..." : <><span>Skicka meddelande</span><ArrowRight className="h-4 w-4" /></>}
+                    <h3 className="font-bold text-gray-900 mb-2">Meddelande skickat!</h3>
+                    <p className="text-sm text-gray-500 mb-6">Vi återkommer så snart vi kan.</p>
+                    <button onClick={() => { setSent(false); setForm({ name: "", email: "", subject: "", message: "" }); }}
+                      className="text-sm hover:underline" style={{ color: "#1a56a0" }}>
+                      Skicka ett nytt meddelande
                     </button>
-                  </form>
-                </>
-              )}
+                  </div>
+                ) : (
+                  <>
+                    <h3 className="font-semibold text-gray-900 mb-5">Skicka ett meddelande</h3>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1.5">Namn</label>
+                          <input required value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Anna Andersson"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0]" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-gray-600 mb-1.5">E-post</label>
+                          <input required type="email" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="anna@example.com"
+                            className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0]" />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1.5">Ämne</label>
+                        <select required value={form.subject} onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+                          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0] bg-white">
+                          <option value="">Välj ett ämne...</option>
+                          <option>Fråga om hyresanalys</option>
+                          <option>Fråga om avtalsgranskning</option>
+                          <option>Problem med betalning</option>
+                          <option>Tekniskt problem</option>
+                          <option>Annan fråga</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-gray-600 mb-1.5">Meddelande</label>
+                        <textarea required rows={4} value={form.message} onChange={e => setForm(f => ({ ...f, message: e.target.value }))} placeholder="Beskriv din fråga..."
+                          className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0] resize-none" />
+                      </div>
+                      <button type="submit" disabled={sending}
+                        className="w-full text-white font-semibold py-3 rounded-md text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
+                        style={{ background: "#1a56a0" }}>
+                        {sending ? "Skickar..." : <><span>Skicka meddelande</span><ArrowRight className="h-4 w-4" /></>}
+                      </button>
+                    </form>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </div>
 
       {/* ── CTA ── */}
-      <section className="px-6 py-24 bg-gradient-to-br from-[#1a56a0] to-[#0c447c]">
-        <div className="max-w-2xl mx-auto text-center text-white">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Redo att granska ditt avtal?</h2>
-          <p className="text-lg opacity-80 mb-8">Välj ett verktyg och kom igång direkt.</p>
-          <a href="#verktyg" className="inline-flex items-center gap-2 bg-white text-[#1a56a0] font-bold px-9 py-4 rounded-xl hover:bg-gray-100 transition-colors text-base">
+      <section className="px-6 py-24" style={{ background: "#0f172a", borderTop: "1px solid #1e293b" }}>
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-10">
+          <div>
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#1a56a0" }}>Kom igång</p>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight mb-2" style={{ color: "#fff" }}>Redo att granska ditt avtal?</h2>
+            <p className="text-base" style={{ color: "#64748b" }}>Välj ett verktyg och kom igång direkt.</p>
+          </div>
+          <a href="#verktyg"
+            className="inline-flex items-center gap-2 font-bold px-8 py-4 rounded-md text-base whitespace-nowrap"
+            style={{ background: "#fff", color: "#1a56a0" }}>
             Se mina verktyg <ArrowRight className="h-5 w-5" />
           </a>
         </div>
       </section>
 
       {/* ── Footer ── */}
-      <footer className="bg-gray-900 text-gray-400 px-6 py-10">
-        <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
+      <footer className="px-6 py-10" style={{ background: "#020617", borderTop: "1px solid #0f172a" }}>
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <Shield className="h-5 w-5 text-[#1a56a0]" />
-            <span className="font-bold text-white">Hyresrättskollen</span>
+            <Shield className="h-4 w-4" style={{ color: "#1a56a0" }} />
+            <span className="font-semibold text-white">Hyresrättskollen</span>
           </div>
-          <div className="flex flex-wrap justify-center gap-5">
-            <a href="#faq"     className="hover:text-white transition-colors">FAQ</a>
-            <a href="#kontakt" className="hover:text-white transition-colors">Kontakt</a>
-            <Link href="/integritetspolicy" className="hover:text-white transition-colors">Integritetspolicy</Link>
-            <Link href="/anvandarvillkor"   className="hover:text-white transition-colors">Användarvillkor</Link>
+          <div className="flex flex-wrap justify-center gap-6">
+            <a href="#faq"     className="text-xs text-slate-500 hover:text-white transition-colors">FAQ</a>
+            <a href="#kontakt" className="text-xs text-slate-500 hover:text-white transition-colors">Kontakt</a>
+            <Link href="/integritetspolicy" className="text-xs text-slate-500 hover:text-white transition-colors">Integritetspolicy</Link>
+            <Link href="/anvandarvillkor"   className="text-xs text-slate-500 hover:text-white transition-colors">Användarvillkor</Link>
           </div>
-          <p className="text-xs">© 2025 Hyresrättskollen</p>
+          <p className="text-xs text-slate-600">© 2025 Hyresrättskollen</p>
         </div>
       </footer>
     </div>
