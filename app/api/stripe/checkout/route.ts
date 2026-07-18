@@ -3,9 +3,9 @@ import { stripe } from "@/lib/stripe";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 const PACKAGES: Record<string, { price: number; credits: number }> = {
-  "5":  { price: 7900,  credits: 5  },
-  "10": { price: 12900, credits: 10 },
-  "25": { price: 19900, credits: 25 },
+  "1": { price: 7900,  credits: 1 },
+  "3": { price: 12900, credits: 3 },
+  "5": { price: 19900, credits: 5 },
 };
 
 export async function GET(request: NextRequest) {
@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL("/auth/login", request.url));
     }
 
-    const pkg = request.nextUrl.searchParams.get("pkg") ?? "10";
-    const packageInfo = PACKAGES[pkg] ?? PACKAGES["10"];
+    const pkg = request.nextUrl.searchParams.get("pkg") ?? "3";
+    const packageInfo = PACKAGES[pkg] ?? PACKAGES["3"];
 
     const { data: profile } = await supabase
       .from("profiles")

@@ -9,9 +9,9 @@ interface PremiumGateProps {
 }
 
 const PACKAGES = [
-  { credits: 5,  price: 79,  label: "Bas",      highlight: false },
-  { credits: 10, price: 129, label: "Standard",  highlight: true  },
-  { credits: 25, price: 199, label: "Premium",   highlight: false },
+  { credits: 1,  price: 79,  label: "Bas",      highlight: false },
+  { credits: 3,  price: 129, label: "Standard",  highlight: true  },
+  { credits: 5,  price: 199, label: "Premium",   highlight: false },
 ];
 
 export function PremiumGate({ children, featureName }: PremiumGateProps) {

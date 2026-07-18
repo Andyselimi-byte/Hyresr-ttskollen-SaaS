@@ -2,9 +2,9 @@
 import { X, Check, Crown, Zap } from "lucide-react";
 
 const PACKAGES = [
-  { pkg: "5",  credits: 5,  price: 79,  label: "Bas",      desc: "Perfekt för att prova", highlight: false },
-  { pkg: "10", credits: 10, price: 129, label: "Standard",  desc: "Mest populärt",         highlight: true  },
-  { pkg: "25", credits: 25, price: 199, label: "Premium",   desc: "Bäst värde per upload", highlight: false },
+  { pkg: "1",  credits: 1,  price: 79,  label: "Bas",      desc: "Perfekt för att prova", highlight: false },
+  { pkg: "3",  credits: 3,  price: 129, label: "Standard",  desc: "Mest populärt",         highlight: true  },
+  { pkg: "5",  credits: 5,  price: 199, label: "Premium",   desc: "Bäst värde per upload", highlight: false },
 ];
 
 const INCLUDED = [
