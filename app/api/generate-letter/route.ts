@@ -16,6 +16,17 @@ export async function POST(request: NextRequest) {
     const template = LETTER_TEMPLATES.find(t => t.id === templateId);
     if (!template) return NextResponse.json({ error: "Okänd brevmall." }, { status: 400 });
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", user.id)
+      .single();
+
+    const credits = profile?.credits ?? 0;
+    if (credits < 1) {
+      return NextResponse.json({ error: "Du har inga credits kvar. Köp uppladdningar för att fortsätta." }, { status: 402 });
+    }
+
     const baseText = template.template(fields);
     const fieldsSummary = Object.entries(fields)
       .map(([k, v]) => `${k}: ${v}`)
@@ -53,6 +64,12 @@ Skriv på svenska.`,
     });
 
     const text = response.content[0].type === "text" ? response.content[0].text : baseText;
+
+    await supabase
+      .from("profiles")
+      .update({ credits: credits - 1 })
+      .eq("id", user.id);
+
     return NextResponse.json({ text });
   } catch (err) {
     console.error("[generate-letter]", err instanceof Error ? err.message : err);

@@ -37,7 +37,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Kunde inte läsa text från PDF:en. Kontrollera att filen inte är skannad." }, { status: 400 });
     }
 
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("credits")
+      .eq("id", user.id)
+      .single();
+
+    const credits = profile?.credits ?? 0;
+    if (credits < 1) {
+      return NextResponse.json({ error: "Du har inga credits kvar. Köp uppladdningar för att fortsätta." }, { status: 402 });
+    }
+
     const analysis = await analyzeContract(text);
+
+    await supabase
+      .from("profiles")
+      .update({ credits: credits - 1 })
+      .eq("id", user.id);
+
     return NextResponse.json(analysis);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
