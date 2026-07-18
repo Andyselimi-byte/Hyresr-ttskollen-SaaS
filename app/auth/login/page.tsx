@@ -40,7 +40,10 @@ export default function LoginPage() {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+        scopes: provider === "facebook" ? "email,public_profile" : undefined,
+      },
     });
     if (error) {
       setError("Inloggning misslyckades. Försök igen.");
