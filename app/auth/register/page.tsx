@@ -104,17 +104,6 @@ export default function RegisterPage() {
             </button>
 
             <button
-              onClick={() => handleSocial("apple")}
-              disabled={!!socialLoading}
-              className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
-            >
-              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.7 9.05 7.42c1.39.07 2.36.74 3.17.8 1.2-.24 2.36-.93 3.64-.84 1.54.12 2.7.72 3.47 1.84-3.15 1.9-2.4 5.77.48 6.89-.57 1.54-1.31 3.06-2.76 4.17zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-              </svg>
-              {socialLoading === "apple" ? "Omdirigerar..." : "Registrera med Apple"}
-            </button>
-
-            <button
               onClick={() => handleSocial("facebook")}
               disabled={!!socialLoading}
               className="w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-60"
