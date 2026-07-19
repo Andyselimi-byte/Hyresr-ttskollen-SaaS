@@ -422,6 +422,68 @@ export default function LandingPage() {
 
       </div>{/* end white break */}
 
+      {/* ── Juridisk grund / Trovärdighet ── */}
+      <section className="px-6 py-20" style={{ background: "#f8faff", borderTop: "1px solid #e5e7eb" }}>
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
+            <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: "#1a56a0" }}>Juridisk grund</p>
+            <h2 className="text-3xl font-bold tracking-tight mb-3" style={{ color: "#0f172a" }}>Baserat på svensk lag</h2>
+            <p className="text-base max-w-xl mx-auto" style={{ color: "#64748b" }}>
+              Hyresrättskollen bygger på 12 kap. Jordabalken — den lag som skyddar alla hyresgäster i Sverige.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-px" style={{ background: "#e5e7eb" }}>
+            {[
+              {
+                par: "46 §",
+                title: "Besittningsskydd",
+                desc: "Som hyresgäst har du rätt att bo kvar i din lägenhet. Hyresvärden kan bara säga upp dig i undantagsfall.",
+              },
+              {
+                par: "55 §",
+                title: "Hyreshöjning & bruksvärde",
+                desc: "Din hyra får inte överstiga bruksvärdet för jämförbara lägenheter. Oskäliga höjningar kan överklagas.",
+              },
+              {
+                par: "15 §",
+                title: "Underhållsansvar",
+                desc: "Hyresvärden ansvarar för att lägenheten är i gott skick. Fel och brister ska åtgärdas utan kostnad för dig.",
+              },
+              {
+                par: "40 §",
+                title: "Andrahandsuthyrning",
+                desc: "Du kan ha rätt att hyra ut i andra hand. Hyresvärden kan inte neka utan godtagbara skäl.",
+              },
+              {
+                par: "26 §",
+                title: "Hyresvärdens tillträde",
+                desc: "Hyresvärden får inte komma in i din lägenhet utan ditt tillstånd, utom vid akuta situationer.",
+              },
+              {
+                par: "4–5 §",
+                title: "Uppsägningstider",
+                desc: "Du har rätt till skälig uppsägningstid. Minst tre månader gäller i de flesta fall för hyresgästen.",
+              },
+            ].map(({ par, title, desc }) => (
+              <div key={par} className="bg-white px-8 py-8">
+                <div className="inline-flex items-center gap-2 mb-4">
+                  <span className="text-xs font-bold px-2 py-1 rounded" style={{ background: "#e6f1fb", color: "#1a56a0" }}>
+                    JB {par}
+                  </span>
+                </div>
+                <h3 className="text-base font-bold mb-2" style={{ color: "#0f172a" }}>{title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: "#64748b" }}>{desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-center text-xs mt-6" style={{ color: "#94a3b8" }}>
+            Hyresrättskollen tillhandahåller juridisk information, inte juridisk rådgivning. Vid tvister rekommenderas kontakt med Hyresgästföreningen eller en jurist.
+          </p>
+        </div>
+      </section>
+
       {/* ── CTA ── */}
       <section className="px-6 py-24" style={{ background: "#0f172a", borderTop: "1px solid #1e293b" }}>
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-10">
