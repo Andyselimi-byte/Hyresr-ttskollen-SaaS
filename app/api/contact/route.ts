@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const SUPPORT_TO = "support@hyresrättskollen.se";
-// Resend kräver en avsändare på en verifierad domän. Tills domänen verifierats
-// kan onboarding@resend.dev användas för test.
-const SUPPORT_FROM = process.env.CONTACT_FROM ?? "Hyresrättskollen <onboarding@resend.dev>";
+// Mottagare — dit kontaktmeddelanden skickas
+const SUPPORT_TO = process.env.CONTACT_TO ?? "support@hyresrättskollen.se";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,18 +16,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Meddelandet är för långt." }, { status: 400 });
     }
 
-    const apiKey = process.env.RESEND_API_KEY;
-    if (!apiKey) {
-      // Ingen mejltjänst konfigurerad än — logga och svara tydligt
-      console.error("[contact] RESEND_API_KEY saknas — meddelande kunde inte skickas");
+    const host = process.env.SMTP_HOST;
+    const user = process.env.SMTP_USER;
+    const pass = process.env.SMTP_PASS;
+
+    if (!host || !user || !pass) {
+      console.error("[contact] SMTP-uppgifter saknas i miljövariabler");
       return NextResponse.json(
         { error: "E-postfunktionen är inte aktiverad än. Mejla oss direkt på support@hyresrättskollen.se." },
         { status: 503 }
       );
     }
 
-    const { Resend } = await import("resend");
-    const resend = new Resend(apiKey);
+    const nodemailer = (await import("nodemailer")).default;
+    const transporter = nodemailer.createTransport({
+      host,
+      port: Number(process.env.SMTP_PORT ?? 465),
+      secure: true, // SSL/TLS på port 465
+      auth: { user, pass },
+    });
 
     const html = `
       <h2>Nytt meddelande via Hyresrättskollen</h2>
@@ -42,16 +47,16 @@ export async function POST(request: NextRequest) {
       ${botAnswer ? `<hr /><p><strong>Chatbotens svar (som användaren inte ansåg räckte):</strong></p><p>${escapeHtml(botAnswer).replace(/\n/g, "<br />")}</p>` : ""}
     `;
 
-    const { error } = await resend.emails.send({
-      from: SUPPORT_FROM,
-      to: SUPPORT_TO,
-      replyTo: email,
-      subject: `[Kontakt] ${subject || "Nytt meddelande"} — ${name || email}`,
-      html,
-    });
-
-    if (error) {
-      console.error("[contact] Resend-fel:", error);
+    try {
+      await transporter.sendMail({
+        from: `"Hyresrättskollen" <${user}>`,
+        to: SUPPORT_TO,
+        replyTo: email,
+        subject: `[Kontakt] ${subject || "Nytt meddelande"} — ${name || email}`,
+        html,
+      });
+    } catch (mailErr) {
+      console.error("[contact] SMTP-fel:", mailErr instanceof Error ? mailErr.message : mailErr);
       return NextResponse.json({ error: "Kunde inte skicka meddelandet. Försök igen senare." }, { status: 502 });
     }
 
