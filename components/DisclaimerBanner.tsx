@@ -7,8 +7,10 @@ export function DisclaimerBanner() {
       <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
       <span>
         Hyresrättskollen är en informationstjänst och utgör inte juridisk rådgivning.
-        Informationen baseras på 12 kap. JB (Jordabalken) och SCB-statistik.
-        Vid specifika tvister rekommenderas kontakt med certifierad jurist eller Hyresnämnden.
+        Informationen är AI-genererad, baseras på 12 kap. JB (Jordabalken) och SCB-statistik,
+        och kan innehålla fel. Vi lämnar inga garantier för att analysen är fullständig eller korrekt,
+        och ansvarar inte för beslut som fattas utifrån den.
+        Vid specifika tvister rekommenderas kontakt med jurist, Hyresgästföreningen eller Hyresnämnden.
       </span>
     </div>
   );

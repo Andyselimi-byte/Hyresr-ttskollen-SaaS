@@ -298,6 +298,14 @@ export default function AvtalPage() {
 
       {analysis && grouped && (
         <div className="space-y-6">
+          {/* Tydlig ansvarsfriskrivning överst på resultatet */}
+          <div className="flex gap-2.5 text-xs bg-amber-50 border border-amber-200 rounded-lg px-4 py-3" style={{ color: "#78571a" }}>
+            <ShieldAlert className="h-4 w-4 mt-0.5 shrink-0" style={{ color: "#b45309" }} />
+            <span>
+              <strong>Detta är automatiserad information — inte juridisk rådgivning.</strong> Analysen är AI-genererad utifrån det underlag du laddat upp och kan innehålla fel eller sakna sammanhang. Fatta inga rättsliga eller ekonomiska beslut enbart baserat på den. Vid tvist eller osäkerhet, kontakta Hyresnämnden, Hyresgästföreningen eller en jurist. Hyresrättskollen ansvarar inte för beslut som fattas utifrån analysen.
+            </span>
+          </div>
+
           {/* Summary card */}
           <div className="bg-white border border-gray-200 rounded-xl p-5">
             <div className="flex items-start justify-between gap-4 mb-3">
