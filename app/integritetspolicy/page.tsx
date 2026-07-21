@@ -66,13 +66,21 @@ export default function IntegritetspolicyPage() {
         </section>
 
         <section className="mb-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Tredjeparter</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Personuppgiftsbiträden (underleverantörer)</h2>
+          <p className="text-gray-700 mb-3">
+            Vi anlitar följande leverantörer som behandlar personuppgifter för vår räkning. Med samtliga finns
+            personuppgiftsbiträdesavtal (DPA) som reglerar behandlingen enligt GDPR.
+          </p>
           <ul className="list-disc pl-5 text-gray-700 space-y-2">
-            <li><strong>Supabase</strong> — databas och autentisering (EU-servrar)</li>
-            <li><strong>Stripe</strong> — betalningshantering</li>
-            <li><strong>Anthropic</strong> — AI-analys av avtal (data skickas ej vidare)</li>
-            <li><strong>Vercel</strong> — hosting (EU-region)</li>
+            <li><strong>Supabase</strong> — databas och autentisering. Behandlar konto- och analysdata (EU-servrar).</li>
+            <li><strong>Vercel</strong> — hosting och drift. Behandlar teknisk trafikdata (EU-region).</li>
+            <li><strong>Anthropic</strong> — AI-analys. Avtalstext du laddar upp skickas för analys. Behandlas enligt kommersiella villkor och används <strong>inte</strong> för att träna AI-modeller.</li>
+            <li><strong>Stripe</strong> — betalningshantering. Behandlar betalnings- och faktureringsuppgifter. Vi lagrar aldrig kortnummer.</li>
+            <li><strong>Resend</strong> — e-postutskick. Behandlar e-postadress för system- och kontomeddelanden.</li>
           </ul>
+          <p className="text-gray-700 mt-3">
+            Vi säljer aldrig dina personuppgifter och delar dem inte med andra parter än de ovan, utom när lag kräver det.
+          </p>
         </section>
 
         <section className="mb-8">
