@@ -64,7 +64,7 @@ Viktiga lagrum att kontrollera:
 
 export async function askQuestion(question: string, context?: string): Promise<string> {
   const response = await client.messages.create({
-    model: "claude-opus-4-8",
+    model: "claude-haiku-4-5-20251001",
     max_tokens: 1000,
     system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster.
 Svara på frågor om hyresrätt baserat på 12 kap. Jordabalken (JB).

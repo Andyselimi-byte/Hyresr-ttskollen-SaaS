@@ -1,8 +1,9 @@
 "use client";
 import { useState, useRef } from "react";
-import { FileText, Upload, AlertCircle, CheckCircle, AlertTriangle, Loader2, ShieldAlert, ShieldCheck, Shield } from "lucide-react";
+import { FileText, Upload, AlertCircle, CheckCircle, AlertTriangle, Loader2, ShieldAlert, ShieldCheck, Shield, Download } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { PremiumGate } from "@/components/PremiumGate";
+import { generateAnalysisPdf } from "@/lib/generateAnalysisPdf";
 import type { ContractAnalysis } from "@/types";
 
 const STATUS_CONFIG = {
@@ -60,6 +61,13 @@ export default function AvtalPage() {
     : null;
 
   const riskCfg = analysis?.riskLevel ? RISK_CONFIG[analysis.riskLevel] : null;
+
+  function handleDownloadPdf() {
+    if (!analysis) return;
+    const doc = generateAnalysisPdf(analysis);
+    const stamp = new Date().toISOString().slice(0, 10);
+    doc.save(`Hyresrattskollen-avtalsanalys-${stamp}.pdf`);
+  }
 
   return (
     <div>
@@ -134,10 +142,19 @@ export default function AvtalPage() {
                 </div>
               )}
             </div>
-            <div className="flex gap-3 text-xs font-medium">
-              <span className="bg-[#eaf3de] text-[#27500a] px-2 py-1 rounded">{grouped.ok.length} OK</span>
-              <span className="bg-[#faeeda] text-[#633806] px-2 py-1 rounded">{grouped.warn.length} Notera</span>
-              <span className="bg-[#fcebeb] text-[#791f1f] px-2 py-1 rounded">{grouped.flag.length} Uppmärksamma</span>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex gap-3 text-xs font-medium">
+                <span className="bg-[#eaf3de] text-[#27500a] px-2 py-1 rounded">{grouped.ok.length} OK</span>
+                <span className="bg-[#faeeda] text-[#633806] px-2 py-1 rounded">{grouped.warn.length} Notera</span>
+                <span className="bg-[#fcebeb] text-[#791f1f] px-2 py-1 rounded">{grouped.flag.length} Uppmärksamma</span>
+              </div>
+              <button
+                onClick={handleDownloadPdf}
+                className="inline-flex items-center gap-2 bg-[#1a56a0] hover:bg-[#0c447c] text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
+              >
+                <Download className="h-4 w-4" />
+                Ladda ner som PDF
+              </button>
             </div>
           </div>
 
