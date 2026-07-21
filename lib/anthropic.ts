@@ -36,12 +36,7 @@ function buildContextBlock(ctx?: AnalysisContext): string {
   return `\n\nKONTEXT OM AVTALET (uppgett av användaren — väg in detta i analysen och referera rätt regelverk):\n- ${parts.join("\n- ")}`;
 }
 
-export async function analyzeContract(contractText: string, ctx?: AnalysisContext): Promise<ContractAnalysis> {
-  const contextBlock = buildContextBlock(ctx);
-  const response = await client.messages.create({
-    model: "claude-opus-4-8",
-    max_tokens: 6000,
-    system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster specialiserat på 12 kap. Jordabalken (JB).
+const ANALYSIS_SYSTEM_PROMPT = `Du är ett juridiskt informationsverktyg för svenska hyresgäster specialiserat på 12 kap. Jordabalken (JB).
 Granska hyresavtal NOGGRANT och returnera ENDAST giltig JSON utan annan text.
 
 Anpassa analysen efter den kontext användaren uppger (avtalstyp, boendeform, datum). Ett avtal som ingåtts från och med 1 juli 2026 bedöms mot nya hyreslagen; tidigare avtal mot de äldre reglerna. Andrahandsavtal och bostadsrätter har delvis andra regler än förstahandshyresrätter — referera rätt regelverk.
@@ -64,15 +59,10 @@ Viktiga lagrum att kontrollera:
 - Störningar (25 §)
 - Hyresvärdens tillträde (26 §)
 - Depositionsregler
-- Uppsägningstider (4-5 §)`,
-    messages: [{
-      role: "user",
-      content: `Granska detta hyresavtal grundligt och identifiera alla viktiga klausuler, problem och rättigheter:${contextBlock}\n\nAVTALSTEXT:\n${contractText.slice(0, 14000)}`,
-    }],
-  });
+- Uppsägningstider (4-5 §)`;
 
-  const text = response.content[0].type === "text" ? response.content[0].text : "";
-  const jsonMatch = text.match(/\{[\s\S]*\}/);
+function parseAnalysis(rawText: string): ContractAnalysis {
+  const jsonMatch = rawText.match(/\{[\s\S]*\}/);
   if (!jsonMatch) throw new Error("Ogiltigt svar från AI-tjänsten");
 
   let jsonStr = jsonMatch[0];
@@ -96,6 +86,54 @@ Viktiga lagrum att kontrollera:
     }
     throw new Error("Kunde inte tolka AI-svaret");
   }
+}
+
+export async function analyzeContract(contractText: string, ctx?: AnalysisContext): Promise<ContractAnalysis> {
+  const contextBlock = buildContextBlock(ctx);
+  const response = await client.messages.create({
+    model: "claude-opus-4-8",
+    max_tokens: 6000,
+    system: ANALYSIS_SYSTEM_PROMPT,
+    messages: [{
+      role: "user",
+      content: `Granska detta hyresavtal grundligt och identifiera alla viktiga klausuler, problem och rättigheter:${contextBlock}\n\nAVTALSTEXT:\n${contractText.slice(0, 14000)}`,
+    }],
+  });
+
+  const text = response.content[0].type === "text" ? response.content[0].text : "";
+  return parseAnalysis(text);
+}
+
+export type ContractImage = {
+  mediaType: "image/jpeg" | "image/png" | "image/webp" | "image/gif";
+  data: string; // base64 utan data-URI-prefix
+};
+
+export async function analyzeContractImages(images: ContractImage[], ctx?: AnalysisContext): Promise<ContractAnalysis> {
+  const contextBlock = buildContextBlock(ctx);
+  const imageBlocks = images.slice(0, 8).map(img => ({
+    type: "image" as const,
+    source: { type: "base64" as const, media_type: img.mediaType, data: img.data },
+  }));
+
+  const response = await client.messages.create({
+    model: "claude-opus-4-8",
+    max_tokens: 6000,
+    system: ANALYSIS_SYSTEM_PROMPT,
+    messages: [{
+      role: "user",
+      content: [
+        {
+          type: "text" as const,
+          text: `Bilderna nedan är foton eller inskannade sidor av ett svenskt hyresavtal. Läs texten i bilderna noggrant och granska avtalet — identifiera alla viktiga klausuler, problem och rättigheter.${contextBlock}\n\nOm bilderna är oläsliga eller inte visar ett hyresavtal, returnera ändå giltig JSON men förklara i summary att underlaget inte kunde läsas.`,
+        },
+        ...imageBlocks,
+      ],
+    }],
+  });
+
+  const text = response.content[0].type === "text" ? response.content[0].text : "";
+  return parseAnalysis(text);
 }
 
 export async function askQuestion(question: string, context?: string): Promise<string> {

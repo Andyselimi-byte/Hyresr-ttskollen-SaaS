@@ -66,10 +66,11 @@ export default function AvtalPage() {
 
   function handleFile(f: File) {
     const n = f.name.toLowerCase();
+    const isImg = /\.(jpe?g|png|webp|gif)$/.test(n) || f.type.startsWith("image/");
     const okType = f.type === "application/pdf" || n.endsWith(".pdf") || n.endsWith(".docx") ||
-      f.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+      f.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || isImg;
     if (n.endsWith(".doc") && !n.endsWith(".docx")) { setError("Gamla .doc-filer stöds inte. Spara om som .docx eller PDF."); return; }
-    if (!okType) { setError("Endast PDF- och Word-filer (.docx) accepteras."); return; }
+    if (!okType) { setError("Endast PDF, Word (.docx) och bilder (JPG/PNG) accepteras."); return; }
     if (f.size > 10 * 1024 * 1024) { setError("Filen är för stor. Maxstorlek är 10 MB."); return; }
     setError("");
     setFile(f);
@@ -203,13 +204,13 @@ export default function AvtalPage() {
           >
             <Upload className="h-8 w-8 text-gray-400 mx-auto mb-3" />
             <p className="text-sm font-medium text-gray-700 mb-1">
-              {file ? file.name : "Dra och släpp ditt kontrakt här"}
+              {file ? file.name : "Dra och släpp ditt kontrakt eller foto här"}
             </p>
-            <p className="text-xs text-gray-400">eller klicka för att välja fil — PDF eller Word (.docx), max 10 MB</p>
+            <p className="text-xs text-gray-400">eller klicka för att välja fil — PDF, Word (.docx) eller foto (JPG/PNG), max 10 MB</p>
             <input
               ref={inputRef}
               type="file"
-              accept="application/pdf,.pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              accept="application/pdf,.pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
               className="hidden"
               onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }}
             />
