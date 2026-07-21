@@ -3,12 +3,48 @@ import type { ContractAnalysis } from "@/types";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
-export async function analyzeContract(contractText: string): Promise<ContractAnalysis> {
+export interface AnalysisContext {
+  contractType?: string;   // t.ex. "Hyresrätt (förstahand)"
+  housingForm?: string;    // t.ex. "Bostadsrätt"
+  signedDate?: string;     // ISO-datum, t.ex. "2026-08-15"
+}
+
+// Nya hyreslagen trädde i kraft 1 juli 2026
+const NEW_LAW_DATE = "2026-07-01";
+
+function buildContextBlock(ctx?: AnalysisContext): string {
+  if (!ctx) return "";
+  const parts: string[] = [];
+  if (ctx.contractType) parts.push(`Avtalstyp: ${ctx.contractType}`);
+  if (ctx.housingForm) parts.push(`Boendeform: ${ctx.housingForm}`);
+
+  if (ctx.signedDate) {
+    const isNew = ctx.signedDate >= NEW_LAW_DATE;
+    parts.push(`Avtalet ingicks: ${ctx.signedDate}`);
+    parts.push(
+      isNew
+        ? `REGELVERK: Avtalet omfattas av NYA hyreslagen (i kraft från 1 juli 2026). Bedöm klausulerna mot de nya reglerna.`
+        : `REGELVERK: Avtalet ingicks FÖRE 1 juli 2026 och bedöms mot de regler som gällde före lagändringen. Om nyare regler kan påverka, notera det men utgå från rättsläget vid avtalets ingående.`
+    );
+  }
+
+  if (ctx.contractType?.toLowerCase().includes("andrahand")) {
+    parts.push(`OBS andrahand: kontrollera särskilt skälig hyra (får ej överstiga förstahandshyran) samt möbleringstillägg (max 15 % påslag). Andrahandshyresgäst saknar normalt besittningsskydd de första två åren.`);
+  }
+
+  if (parts.length === 0) return "";
+  return `\n\nKONTEXT OM AVTALET (uppgett av användaren — väg in detta i analysen och referera rätt regelverk):\n- ${parts.join("\n- ")}`;
+}
+
+export async function analyzeContract(contractText: string, ctx?: AnalysisContext): Promise<ContractAnalysis> {
+  const contextBlock = buildContextBlock(ctx);
   const response = await client.messages.create({
     model: "claude-opus-4-8",
     max_tokens: 6000,
     system: `Du är ett juridiskt informationsverktyg för svenska hyresgäster specialiserat på 12 kap. Jordabalken (JB).
 Granska hyresavtal NOGGRANT och returnera ENDAST giltig JSON utan annan text.
+
+Anpassa analysen efter den kontext användaren uppger (avtalstyp, boendeform, datum). Ett avtal som ingåtts från och med 1 juli 2026 bedöms mot nya hyreslagen; tidigare avtal mot de äldre reglerna. Andrahandsavtal och bostadsrätter har delvis andra regler än förstahandshyresrätter — referera rätt regelverk.
 
 Analysera och hitta:
 - Olagliga klausuler som strider mot 12 kap. JB (status: "flag")
@@ -31,7 +67,7 @@ Viktiga lagrum att kontrollera:
 - Uppsägningstider (4-5 §)`,
     messages: [{
       role: "user",
-      content: `Granska detta hyresavtal grundligt och identifiera alla viktiga klausuler, problem och rättigheter:\n\n${contractText.slice(0, 14000)}`,
+      content: `Granska detta hyresavtal grundligt och identifiera alla viktiga klausuler, problem och rättigheter:${contextBlock}\n\nAVTALSTEXT:\n${contractText.slice(0, 14000)}`,
     }],
   });
 

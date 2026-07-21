@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { analyzeContract } from "@/lib/anthropic";
+import { analyzeContract, type AnalysisContext } from "@/lib/anthropic";
 import { createServerSupabaseClient } from "@/lib/supabase-server";
 
 export async function POST(request: NextRequest) {
@@ -12,6 +12,12 @@ export async function POST(request: NextRequest) {
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
+
+    const ctx: AnalysisContext = {
+      contractType: (formData.get("contractType") as string) || undefined,
+      housingForm: (formData.get("housingForm") as string) || undefined,
+      signedDate: (formData.get("signedDate") as string) || undefined,
+    };
 
     if (!file) {
       return NextResponse.json({ error: "Ingen fil bifogad." }, { status: 400 });
@@ -48,7 +54,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Du har inga credits kvar. Köp uppladdningar för att fortsätta." }, { status: 402 });
     }
 
-    const analysis = await analyzeContract(text);
+    const analysis = await analyzeContract(text, ctx);
 
     await supabase
       .from("profiles")
