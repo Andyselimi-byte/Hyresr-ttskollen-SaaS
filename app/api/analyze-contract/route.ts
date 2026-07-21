@@ -22,25 +22,48 @@ export async function POST(request: NextRequest) {
     if (!file) {
       return NextResponse.json({ error: "Ingen fil bifogad." }, { status: 400 });
     }
-    if (file.type !== "application/pdf") {
-      return NextResponse.json({ error: "Endast PDF-filer accepteras." }, { status: 400 });
+
+    const name = file.name.toLowerCase();
+    const isPdf = file.type === "application/pdf" || name.endsWith(".pdf");
+    const isDocx = name.endsWith(".docx") ||
+      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+    const isDoc = name.endsWith(".doc");
+
+    if (isDoc && !isDocx) {
+      return NextResponse.json({ error: "Gamla .doc-filer stöds inte. Spara om som .docx eller PDF och försök igen." }, { status: 400 });
+    }
+    if (!isPdf && !isDocx) {
+      return NextResponse.json({ error: "Endast PDF- och Word-filer (.docx) accepteras." }, { status: 400 });
     }
     if (file.size > 10 * 1024 * 1024) {
       return NextResponse.json({ error: "Filen är för stor. Maxstorlek är 10 MB." }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const pdfParse = (await import("pdf-parse")).default;
-    let parsed;
-    try {
-      parsed = await pdfParse(buffer);
-    } catch {
-      return NextResponse.json({ error: "Kunde inte läsa PDF:en. Kontrollera att filen inte är skadad." }, { status: 400 });
+    let rawText = "";
+
+    if (isPdf) {
+      const pdfParse = (await import("pdf-parse")).default;
+      try {
+        const parsed = await pdfParse(buffer);
+        rawText = parsed.text ?? "";
+      } catch {
+        return NextResponse.json({ error: "Kunde inte läsa PDF:en. Kontrollera att filen inte är skadad." }, { status: 400 });
+      }
+    } else {
+      const mammoth = (await import("mammoth")).default;
+      try {
+        const result = await mammoth.extractRawText({ buffer });
+        rawText = result.value ?? "";
+      } catch {
+        return NextResponse.json({ error: "Kunde inte läsa Word-filen. Kontrollera att den inte är skadad." }, { status: 400 });
+      }
     }
-    const text = (parsed.text ?? "").slice(0, 12000);
+
+    const text = rawText.slice(0, 12000);
 
     if (!text.trim()) {
-      return NextResponse.json({ error: "Kunde inte läsa text från PDF:en. Kontrollera att filen inte är skannad." }, { status: 400 });
+      return NextResponse.json({ error: "Kunde inte läsa text ur filen. Om det är en skannad PDF eller bild saknas läsbar text." }, { status: 400 });
     }
 
     const { data: profile } = await supabase
