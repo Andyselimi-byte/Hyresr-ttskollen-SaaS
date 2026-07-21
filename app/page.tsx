@@ -74,13 +74,29 @@ export default function LandingPage() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [contactError, setContactError] = useState("");
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSending(true);
-    await new Promise(r => setTimeout(r, 900));
-    setSent(true);
-    setSending(false);
+    setContactError("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setContactError(data.error ?? "Kunde inte skicka meddelandet.");
+      } else {
+        setSent(true);
+      }
+    } catch {
+      setContactError("Kunde inte skicka meddelandet. Försök igen.");
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -122,10 +138,9 @@ export default function LandingPage() {
           <div className="grid lg:grid-cols-2 gap-16 items-end">
             <div>
               <h1 className="text-5xl sm:text-6xl font-bold leading-none tracking-tight mb-6" style={{ color: "#fff" }}>
-                Visste du att{" "}
-                <span style={{ color: "#60a5fa" }}>1&nbsp;av&nbsp;3</span>
+                Innehåller ditt
                 <br />hyresavtal
-                <br />är olagliga?
+                <br /><span style={{ color: "#60a5fa" }}>olagliga</span> villkor?
               </h1>
               <div className="w-10 h-0.5 mb-6" style={{ background: "#1a56a0" }} />
               <p className="text-base leading-relaxed mb-8 max-w-md" style={{ color: "#94a3b8" }}>
@@ -153,9 +168,9 @@ export default function LandingPage() {
             {/* Right: 3 stats stacked */}
             <div className="divide-y" style={{ borderColor: "#1e293b" }}>
               {[
-                { num: "1 av 3", label: "hyresavtal innehåller minst en olaglig klausul" },
-                { num: "73 %",   label: "av hyresgäster känner inte till sina rättigheter" },
-                { num: "4 800 kr", label: "genomsnittlig överbetald hyra per år i Stockholm" },
+                { num: "15 %",     label: "högsta tillåtna möbleringstillägg vid andrahandsuthyrning" },
+                { num: "12 mån",   label: "så långt bakåt kan du kräva tillbaka överhyra via Hyresnämnden" },
+                { num: "~13 800 kr", label: "genomsnittlig månadshyra för en 2:a i Stockholm (Hyresgästföreningen)" },
               ].map((s, i) => (
                 <div key={i} className="flex items-baseline gap-6 py-5">
                   <span className="text-3xl font-bold tracking-tight tabular-nums shrink-0"
@@ -405,6 +420,9 @@ export default function LandingPage() {
                           placeholder="Beskriv din fråga..."
                           className="w-full border border-gray-300 rounded-md px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1a56a0] resize-none" />
                       </div>
+                      {contactError && (
+                        <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2">{contactError}</p>
+                      )}
                       <button type="submit" disabled={sending}
                         className="w-full text-white font-semibold py-3 rounded-md text-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-60"
                         style={{ background: "#1a56a0" }}
@@ -412,6 +430,9 @@ export default function LandingPage() {
                         onMouseOut={e => (e.currentTarget.style.background = "#1a56a0")}>
                         {sending ? "Skickar..." : <><span>Skicka meddelande</span><ArrowRight className="h-4 w-4" /></>}
                       </button>
+                      <p className="text-xs text-center" style={{ color: "#94a3b8" }}>
+                        Tips: klicka på chattbubblan nere till höger för att få svar direkt av vår assistent.
+                      </p>
                     </form>
                   </>
                 )}

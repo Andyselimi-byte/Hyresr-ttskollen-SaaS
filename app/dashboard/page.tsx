@@ -33,9 +33,9 @@ const MISSED_CLAUSES = [
 ];
 
 const STATS = [
-  { num: "1 av 3", desc: "hyresavtal innehåller minst en olaglig klausul" },
-  { num: "73 %", desc: "av hyresgäster känner inte till sina rättigheter fullt ut" },
-  { num: "4 800 kr", desc: "genomsnittlig överbetald hyra per år i Stockholm" },
+  { num: "15 %", desc: "högsta tillåtna möbleringstillägg vid andrahandsuthyrning" },
+  { num: "12 mån", desc: "så långt bakåt kan du kräva tillbaka överhyra via Hyresnämnden" },
+  { num: "~13 800 kr", desc: "genomsnittlig månadshyra för en 2:a i Stockholm (Hyresgästföreningen)" },
 ];
 
 const FEATURES = [
