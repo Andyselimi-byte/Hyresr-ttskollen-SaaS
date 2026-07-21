@@ -55,6 +55,15 @@ export async function POST(request: NextRequest) {
       .update({ credits: credits - 1 })
       .eq("id", user.id);
 
+    // Spara i användarens historik (best-effort — blockerar inte svaret)
+    await supabase.from("contract_analyses").insert({
+      user_id: user.id,
+      file_name: file.name,
+      summary: analysis.summary,
+      risk_level: analysis.riskLevel ?? null,
+      analysis,
+    });
+
     return NextResponse.json(analysis);
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

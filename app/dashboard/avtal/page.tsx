@@ -1,10 +1,20 @@
 "use client";
-import { useState, useRef } from "react";
-import { FileText, Upload, AlertCircle, CheckCircle, AlertTriangle, Loader2, ShieldAlert, ShieldCheck, Shield, Download } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { FileText, Upload, AlertCircle, CheckCircle, AlertTriangle, Loader2, ShieldAlert, ShieldCheck, Shield, Download, Clock, Trash2, ChevronRight } from "lucide-react";
 import { DisclaimerBanner } from "@/components/DisclaimerBanner";
 import { PremiumGate } from "@/components/PremiumGate";
 import { generateAnalysisPdf } from "@/lib/generateAnalysisPdf";
+import { createClient } from "@/lib/supabase";
 import type { ContractAnalysis } from "@/types";
+
+interface HistoryItem {
+  id: string;
+  file_name: string | null;
+  summary: string | null;
+  risk_level: string | null;
+  analysis: ContractAnalysis;
+  created_at: string;
+}
 
 const STATUS_CONFIG = {
   ok:   { icon: CheckCircle,   cls: "bg-[#eaf3de] border-[#97c459] text-[#27500a]",  badge: "bg-[#97c459] text-white", label: "OK" },
@@ -24,7 +34,29 @@ export default function AvtalPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [analysis, setAnalysis] = useState<ContractAnalysis | null>(null);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const loadHistory = useCallback(async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase
+      .from("contract_analyses")
+      .select("id, file_name, summary, risk_level, analysis, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
+    if (data) setHistory(data as HistoryItem[]);
+  }, []);
+
+  useEffect(() => { loadHistory(); }, [loadHistory]);
+
+  async function deleteHistoryItem(id: string) {
+    const supabase = createClient();
+    await supabase.from("contract_analyses").delete().eq("id", id);
+    setHistory(h => h.filter(item => item.id !== id));
+  }
 
   function handleFile(f: File) {
     if (f.type !== "application/pdf") { setError("Endast PDF-filer accepteras."); return; }
@@ -45,6 +77,7 @@ export default function AvtalPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? "Något gick fel");
       setAnalysis(data);
+      loadHistory();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Okänt fel");
     } finally {
@@ -123,6 +156,68 @@ export default function AvtalPage() {
               {loading ? <><Loader2 className="h-4 w-4 animate-spin" /> Analyserar avtal — detta tar ca 30 sekunder...</> : "Analysera avtal"}
             </button>
           )}
+        </div>
+      )}
+
+      {/* Historik — tidigare analyser sparade i kontot */}
+      {!analysis && history.length > 0 && (
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <Clock className="h-4 w-4 text-[#1a56a0]" />
+            <h2 className="text-sm font-semibold text-gray-700">Dina tidigare analyser</h2>
+            <span className="text-[10px] font-medium text-gray-400">({history.length})</span>
+          </div>
+          <div className="space-y-2">
+            {history.map(item => {
+              const cfg = item.risk_level ? RISK_CONFIG[item.risk_level as keyof typeof RISK_CONFIG] : null;
+              return (
+                <div
+                  key={item.id}
+                  className="group flex items-center gap-3 bg-white border border-gray-200 rounded-xl px-4 py-3 hover:border-[#1a56a0] transition-colors"
+                >
+                  <button
+                    onClick={() => { setAnalysis(item.analysis); setFile(null); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+                    className="flex-1 flex items-center gap-3 text-left min-w-0"
+                  >
+                    <div className="shrink-0 w-9 h-9 rounded-lg bg-[#e6f1fb] flex items-center justify-center">
+                      <FileText className="h-4 w-4 text-[#1a56a0]" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {item.file_name || "Avtalsanalys"}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {new Date(item.created_at).toLocaleDateString("sv-SE", { year: "numeric", month: "short", day: "numeric" })}
+                        {" · "}
+                        {new Date(item.created_at).toLocaleTimeString("sv-SE", { hour: "2-digit", minute: "2-digit" })}
+                      </p>
+                    </div>
+                    {cfg && (
+                      <span className={`shrink-0 hidden sm:inline-flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded-full border ${cfg.cls}`}>
+                        <cfg.icon className="h-3 w-3" />
+                        {cfg.label}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => { const doc = generateAnalysisPdf(item.analysis); doc.save(`Hyresrattskollen-avtalsanalys-${item.created_at.slice(0, 10)}.pdf`); }}
+                    className="shrink-0 p-2 text-gray-400 hover:text-[#1a56a0] rounded-lg hover:bg-gray-50 transition-colors"
+                    title="Ladda ner som PDF"
+                  >
+                    <Download className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => deleteHistoryItem(item.id)}
+                    className="shrink-0 p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-gray-50 transition-colors"
+                    title="Ta bort"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                  <ChevronRight className="h-4 w-4 text-gray-300 shrink-0 hidden sm:block" />
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 
